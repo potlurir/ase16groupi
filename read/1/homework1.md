@@ -20,7 +20,7 @@ Information Retrieval - Using Tf-Idf coupled with NLP techniques to enhance the 
 Machine Learning - Different approaches using machine learning algorithms have been studied - like binary classifier, SVM - but ML approaches tend to be less time efficient. On the other hand, it has been showed that advanced IR approaches outperform state-of-the-art ML approaches in accuracy and efficiency.
 The authors’ prior work ‘BugScout’ 
 
-*3.3. Baseline results*: 
+*3.3. Data*: 
 
 |Project| Time period | Report|  Dup| Train| Test|
 |---------|----------------|----------|-------|--------|-----|
