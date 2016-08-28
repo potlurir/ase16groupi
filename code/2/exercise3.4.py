@@ -31,4 +31,14 @@ def do_twice(f, value):
 def print_spam(value):
     print value
 
-do_twice(print_spam, "spam")
+def print_twice(str):
+    for i in xrange(0, 2):
+        print_spam(str)
+
+def do_four(func, value):
+    print_twice(value)
+    print_twice(value)
+
+do_twice(print_twice, "spam")
+# print_twice("spam")
+# do_four(print_twice, "spam")
