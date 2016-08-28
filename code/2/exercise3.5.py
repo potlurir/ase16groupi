@@ -41,4 +41,4 @@ def printGrids(m, n):
         if i == m - 1:
             plusBorder(n)
 
-printGrids(2, 2)
+printGrids(4, 4)
