@@ -28,11 +28,11 @@ Write a function that draws a similar grid with four rows and four columns.
 
 
 def plusBorder(cols):
-    print cols*("+" + 4*" - ") + "+"
+    print cols*("+" + 4*" - "), "+"
 
 def verticalBorder(cols):
     for x in xrange(0, 4):
-        print cols*("|" + 4*"   ") + "|"
+        print cols*("|" + 4*"   "), "|"
 
 def printGrids(m, n):
     for i in xrange(0, m):
