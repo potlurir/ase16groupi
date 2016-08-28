@@ -27,18 +27,19 @@ Write a function that draws a similar grid with four rows and four columns.
 """
 
 
-def plusBorder(cols):
-    print cols*("+" + 4*" - "), "+"
+def exercise5():
+    def plusBorder(cols):
+        print cols*("+" + 4*" - "), "+"
 
-def verticalBorder(cols):
-    for x in xrange(0, 4):
-        print cols*("|" + 4*"   "), "|"
+    def verticalBorder(cols):
+        for x in xrange(0, 4):
+            print cols*("|" + 4*"   "), "|"
 
-def printGrids(m, n):
-    for i in xrange(0, m):
-        plusBorder(n)
-        verticalBorder(n)
-        if i == m - 1:
+    def printGrids(m, n):
+        for i in xrange(0, m):
             plusBorder(n)
+            verticalBorder(n)
+            if i == m - 1:
+                plusBorder(n)
 
-printGrids(4, 4)
+    printGrids(4, 4)

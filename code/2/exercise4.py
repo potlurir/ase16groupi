@@ -23,22 +23,22 @@ do_four that takes a function object and a value and calls the function four
 times, passing the value as a parameter. There should be only two statements
 in the body of this function, not four. """
 
+def exercise4():
+    def do_twice(f, value):
+        f(value)
+        f(value)
 
-def do_twice(f, value):
-    f(value)
-    f(value)
+    def print_spam(value):
+        print value
 
-def print_spam(value):
-    print value
+    def print_twice(str):
+        for i in xrange(0, 2):
+            print_spam(str)
 
-def print_twice(str):
-    for i in xrange(0, 2):
-        print_spam(str)
+    def do_four(func, value):
+        print_twice(value)
+        print_twice(value)
 
-def do_four(func, value):
-    print_twice(value)
-    print_twice(value)
-
-do_twice(print_twice, "spam")
-# print_twice("spam")
-# do_four(print_twice, "spam")
+    do_twice(print_twice, "spam")
+    # print_twice("spam")
+    # do_four(print_twice, "spam")
