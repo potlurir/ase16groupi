@@ -72,8 +72,6 @@ flower(bob, 6, 200, 60)
 """
 
 
-
-
 if __name__ == "__main__":
     world = TurtleWorld()
     bob = Turtle()
