@@ -40,5 +40,5 @@ def exercise4():
         print_twice(value)
 
     do_twice(print_twice, "spam")
-    # print_twice("spam")
-    # do_four(print_twice, "spam")
+    print_twice("spam")
+    do_four(print_twice, "spam")
