@@ -11,7 +11,7 @@ https://github.com/txt/ase16/blob/master/doc/hw2.md#active-shooter-exercise
 
 > All the exercises 3.1, 3.2, 3.3, 3.4, 3.5.
 
-[think3.py](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/pritesh/think3.py)
+[think3.py](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/think3.py)
 
 `python think3.py`
 

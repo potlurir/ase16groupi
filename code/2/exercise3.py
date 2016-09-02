@@ -8,3 +8,6 @@ def exercise3():
         print "%s%s" % (70*" ", s)
 
     right_justify("team I")
+
+if __name__ == '__main__':
+    exercise3()

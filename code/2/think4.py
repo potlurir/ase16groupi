@@ -1,4 +1,5 @@
 from swampy.TurtleWorld import TurtleWorld, Turtle, fd, lt, wait_for_user
+import math
 
 
 def square(length):
@@ -12,8 +13,11 @@ def polygon(n, length):
         fd(t, length)
         lt(t, angle)
 
+
+
 world = TurtleWorld()
 t = Turtle()
-square(100)
-# polygon(5, 100)
+
+# square(100)
+polygon(5, 100)
 wait_for_user()
