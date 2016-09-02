@@ -75,16 +75,19 @@ flower(bob, 6, 200, 60)
 if __name__ == "__main__":
     world = TurtleWorld()
     bob = Turtle()
-    bob.delay = 0.0001
+    bob.delay = 0.001
+    # Drawing an arc takes a lot of time due to the large number of turns
+    # the turtle makes. Decreasing the delay doesn't help much, increasing
+    # the length of arc and keeping the angle same makes it fast but the
+    # diagrams go out of window.
+    
+    move(bob, 100, -100)
+    flower(bob, 7, 280, 60)
 
-    # Function args used from code sample in book
-    move(bob, -100, 0)
-    flower(bob, 7, 60, 60)
+    move(bob, bob.get_x() + 600, -100)
+    flower(bob, 10, 240, 80)
 
-    move(bob, bob.get_x()+ 100, 0)
-    flower(bob, 10, 40, 80)
-
-    move(bob, bob.get_x() + 200, bob.get_y() - 200)
-    flower(bob, 20, 140, 20)
+    move(bob, bob.get_x() + 1200, bob.get_y() - 200)
+    flower(bob, 20, 280, 20)
     wait_for_user()
 
