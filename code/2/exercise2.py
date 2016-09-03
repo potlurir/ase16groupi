@@ -13,3 +13,6 @@ def exercise2():
         print "I sleep all night and I work all day."
 
     repeat_lyrics()
+
+if __name__ == '__main__':
+    exercise2()

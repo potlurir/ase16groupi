@@ -38,4 +38,8 @@ def exercise5():
         for i in xrange(0, m*5 + 1):
             plusBorder(n) if i%5 == 0 else verticalBorder(n)
 
+    printGrids(2, 2)
     printGrids(4, 4)
+
+if __name__ == '__main__':
+    exercise5()

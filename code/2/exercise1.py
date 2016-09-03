@@ -14,3 +14,6 @@ def exercise1():
     def repeat_lyrics():
         print_lyrics()
         print_lyrics()
+
+if __name__ == '__main__':
+    exercise1()
