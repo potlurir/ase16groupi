@@ -15,9 +15,16 @@ https://github.com/txt/ase16/blob/master/doc/hw2.md#active-shooter-exercise
 
 `python think3.py`
 
-[Screenshot for 3.1 and 3.2](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/pritesh/output_3.1.JPG)
+[Screenshot for 3.1](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/Screenshots/Exercise%203.1.png)
 
-[screenshot for 3.3, 3.4, 3.5](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/pritesh/output_3.3%20to%203.5.JPG)
+[Screenshot for 3.2](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/Screenshots/Exercise%203.2.png)
+
+[Screenshot for 3.3](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/Screenshots/Exercise%203.3.png)
+
+[Screenshot for 3.4](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/Screenshots/Exercise%203.4.png)
+
+[Screenshot for 3.5](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/Screenshots/Exercise%203.5.png)
+
 
 > Exercises 4.2
 
