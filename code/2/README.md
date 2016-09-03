@@ -30,16 +30,14 @@ https://github.com/txt/ase16/blob/master/doc/hw2.md#active-shooter-exercise
 
 `python think_4a.py`
 
-[think_4a.py](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/pritesh/think_4a.py)
+[think_4a.py](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/think_4a.py)
 
-[screenshot for 4.2](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/pritesh/output_4.2.JPG)
-
-[Another screenshot for 4.3](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/pritesh/output_4_2_b.JPG)
+[Screenshot for 4.2](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/Screenshots/Exercise%204.2.jpg)
 
 > Exercise 4.3
 
 `python think_4_3_b.py`
 
-[think_4_3_b.py](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/pritesh/think_4_3_b.py)
+[think4_3.py](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/think_4_3_b.py)
 
-[screenshot for 4.3](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/pritesh/output_4.3.JPG)
+[Screenshot for 4.3](https://github.com/rpotluri12/ase16groupi/blob/master/code/2/Screenshots/Exercise%204.3.jpg)
