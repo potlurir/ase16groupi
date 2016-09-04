@@ -36,6 +36,6 @@ iv2. Depending on who the assignee for the bug is there is a possibility to bett
 
 v. References
 
-v1. https://en.wikipedia.org/wiki/Topic_model
-v2. http://usersnap.com/blog/what-is-a-bug-report/
+v1. [Wikipedia for LDA](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation)
+v2. [Bug report](http://usersnap.com/blog/what-is-a-bug-report/)
 
