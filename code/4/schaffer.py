@@ -33,7 +33,7 @@ def simulated_annealing():
     e = schaffer(s)  # Initial energy
     sb = s  # best solution
     eb = e  # lowest energy
-    n = 500  # Number of cycles
+    n = 30  # Number of cycles
     m = 25  # number of trials per cycle
     k = 1
     print(s, e)
