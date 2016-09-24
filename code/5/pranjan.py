@@ -268,8 +268,8 @@ def bdom(problem, one, two):
     # of bdom above.
     try:
         for o, t in zip(objs_one, objs_two):
-            assert o >= t
-            if o > t:
+            assert o <= t
+            if o < t:
                 dominates = True
     except AssertionError:
         return False
@@ -302,7 +302,7 @@ def fitness(problem, population, point):
 def elitism(problem, population, retain_size):
     # TODO 11: Sort the population with respect to the fitness
     # of the points and return the top 'retain_size' points of the population
-    population = sorted(population, key= lambda x: fitness(problem, population, x))
+    population = sorted(population, key= lambda x: fitness(problem, population, x), reverse=True)
     return population[:retain_size]
 
 
