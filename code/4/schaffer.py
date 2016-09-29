@@ -43,14 +43,17 @@ def probability(old, new, k):
     return math.exp((old - new)/float(k))
 
 def simulated_annealing(n, m, seed):
+    """ Simulated Annealing (SA) tries to find the decision which optimizes the objectives. 
+    How? 
+    It Starts off at a random state and calculates the energy at that state. say this state 'sn'
+    If sn is the best yet, saves this state as sb and jumps to that state. So sn becomes 's'
+    If sn is not the best yet, but somewhat better than the previous state (s), jump to it.
+    If sn is not even better than the previous state, then at a random probability, take it. (this step makes GA to avoid local minima/maxima)
+    Repeat this a large number of times. 
+    """
     # n is Number of cycles
     # m is number of trials per cycle
-    random.seed(seed)
-    s = random.randint(-100000, 100000)  # initial state
-    e = schaffer(s)  # Initial energy
-    sb = s  # best solution
-    eb = e  # lowest energy
-    k = 1
+    
     print("Initial State: {0}\nInitial Energy: {1} \n".format(s, e))
     print("\nNote: ")
     print("Each line represents a cycle of {0} trials. \nEach trial is represented by a full stop i.e. '.'".format(m))
@@ -58,7 +61,14 @@ def simulated_annealing(n, m, seed):
     print("'+' means we picked a state that was better than the current one.")
     print("'!' means we picked a state that is the best among the states encounterd yet.")
     print("For larger n and m, the number of ? printed should decrease.")
-    for i in range(n):
+    
+    random.seed(seed)
+    s = random.randint(-100000, 100000)  # initial state, it is like the previous state.
+    e = schaffer(s)  # Initial energy or the previous energy
+    sb = s  # best solution
+    eb = e  # lowest energy
+    k = 1
+    for i in range(n):  # We could have done it in one loop itself, but breaking it into two loops helps us with output formatting.
         print()
         print(', {0}, :{1:.2f},\t'.format(m * i, e), end="")
         for j in range(m):
