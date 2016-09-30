@@ -3,18 +3,20 @@ import argparse
 import math
 import random
 
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 # command to run: $ python schaffer.py --n 1000 --m 50 --seed 20
 # n, m and seed are optional arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--n", help="Number of cycles. Default is 30", type=int)
 parser.add_argument("--m", help="Number of trials per cycle. Default is 25", type=int)
 parser.add_argument("--seed", help="A seed for random generator. Default is a random int between 1 and 100", type=int)
-#---------------------------------------------------------------    
+# ---------------------------------------------------------------
+
 
 def find_max_f1_f2(x):
     return pow(x,2) + pow(x-2, 2)
-    
+
+
 def find_schaffer_max_min():
     """Calculate the maximum and minimum of (F1 + F2)
     
@@ -22,13 +24,13 @@ def find_schaffer_max_min():
     and max values for (f1 + f2). This is needed to normalize the shaffer 
     objective function value in 0..1.
     """
-    max = -float("inf")
-    min = +float("inf")
+    _max = -float("inf")
+    _min = +float("inf")
     for i in range(10000):
         e = find_max_f1_f2(random.randint(-100000, 100000))
-        max = e if e > max else max
-        min = e if e < min else min
-    return max, min
+        _max = e if e > _max else _max
+        _min = e if e < _min else _min
+    return _max, _min
 
 #print(find_schaffer_max_min())
     
@@ -54,7 +56,6 @@ def simulated_annealing(n, m, seed):
     # n is Number of cycles
     # m is number of trials per cycle
     
-    print("Initial State: {0}\nInitial Energy: {1} \n".format(s, e))
     print("\nNote: ")
     print("Each line represents a cycle of {0} trials. \nEach trial is represented by a full stop i.e. '.'".format(m))
     print("Additionally: \n'?' means we picked a state that was not as good as the present state. i.e 'A drunken decision'")
@@ -65,6 +66,7 @@ def simulated_annealing(n, m, seed):
     random.seed(seed)
     s = random.randint(-100000, 100000)  # initial state, it is like the previous state.
     e = schaffer(s)  # Initial energy or the previous energy
+    print("Initial State: {0}\nInitial Energy: {1} \n".format(s, e))
     sb = s  # best solution
     eb = e  # lowest energy
     k = 1
@@ -96,5 +98,5 @@ if __name__ == "__main__":
     n = 30 if args.n is None else args.n
     m = args.m if args.m else 25
 
-    sb, e= simulated_annealing(n, m, seed)
+    sb, e = simulated_annealing(n, m, seed)
     print("\nseed = {0}, sb= {4}, e={1}, \nnumber of cycles = {2}, number of trials per cycle = {3}".format(seed, e, n, m, sb))
