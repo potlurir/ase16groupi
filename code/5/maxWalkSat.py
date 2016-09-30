@@ -6,27 +6,6 @@ import random
 import matplotlib.pyplot as plt
 
 
-def find_osyczka_max_min():
-    def calculate_energy(f1, f2):
-        return f1 + f2
-    prob = Problem()
-    _max = -float('inf')
-    _min = float('inf')
-    for i in range(1000):
-        state = prob.generate_one()  # Will generate a valid state
-        objectives = prob.evaluate_objective(state)
-        state_energy = calculate_energy(objectives['f1'], objectives['f2'])
-        _max = state_energy if state_energy > _max else _max
-        _min = state_energy if state_energy < _min else _min
-    return _max, _min
-
-
-def osyczka_energy(state):
-    f1 = state.objectives['f1']
-    f2 = state.objectives['f2']
-    return (f1 + f2 - OSZ_MIN) / float(OSZ_MAX + OSZ_MIN)
-
-
 def f1_osyczka2(x1, x2, x3, x4, x5, x6):
     """ f1(x) = -(25 * (x1 - 2)^2 + (x2-2)^2 + (x3-1)^2(x4-4)^2 + (x5-1)^2)"""
     return -1 * ((25 * pow(x1 - 2, 2)) +
@@ -77,14 +56,6 @@ class Problem(O):
 
     @staticmethod
     def evaluate_objective(state):
-
-        # def f1():
-        #     return -(25 * pow(d['x1'] - 2, 2) + pow(d['x2'] - 2, 2) + pow(d['x3']-1, 2) * pow(d['x4'] - 4, 2) +
-        #              pow(d['x5'] - 1, 2))
-        #
-        # def f2():
-        #     return d['x1'] ** 2 + d['x2'] ** 2 + d['x3'] ** 2 + d['x4'] ** 2 + d['x5'] ** 2 + d['x6'] ** 2
-
         f1 = f1_osyczka2(**state.decisions)
         f2 = f2_osyczka2(**state.decisions)
         state.objectives = {'f1': f1, 'f2': f2}
@@ -108,7 +79,7 @@ class Problem(O):
 
     def generate_one(self):
         i = 0
-        max_retries = 1000  # # Try to find a valid state for max_tries number of times at max
+        max_retries = 1000  # Try to find a valid state for max_tries number of times at max
         while True and i < max_retries:
             variables = {}
             for dec in self.decisions:
@@ -122,12 +93,10 @@ class Problem(O):
             raise Exception("Could not generate a valid point in {} number of retries".format(max_retries))
 
 
-OSZ_MAX, OSZ_MIN = find_osyczka_max_min()
-print("OSZ_MIN = {0} , OSZ_MAX = {1}".format(OSZ_MIN, OSZ_MAX))
-
-
 def energy(state):
-    return (state.objectives['f1'] + state.objectives['f2'] - OSZ_MIN) / float(OSZ_MAX - OSZ_MIN)
+    #return (state.objectives['f1'] + state.objectives['f2'] - OSZ_MIN) / float(OSZ_MAX - OSZ_MIN)
+    return state.objectives['f1'] + state.objectives['f2']
+
 
 P = 0.5
 MAX_TRIES = 100
@@ -175,7 +144,8 @@ def max_walk_sat():
                             state_best = state_new
                             my_data.append(energy_best)
 
-        print (".")
+            print (".", end="")
+        print()
     return my_data, state_best
 
 
