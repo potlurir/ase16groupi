@@ -99,7 +99,7 @@ def energy(state):
 
 
 P = 0.5
-MAX_TRIES = 100
+MAX_TRIES = 50
 MAX_CHANGES = 50
 # Rather than breaking when score(solution) > threshold, we will try to see how good the solution gets
 
@@ -111,11 +111,12 @@ def max_walk_sat():
     prob.evaluate_objective(state_best)
     energy_best = energy(state_best)
     my_data.append(energy_best)
+    print("\nEnergy best")
     for i in range(MAX_TRIES):  # FOR i = 1 to max-tries DO
         state_random = prob.generate_one()  # solution = random assignment
         prob.evaluate_objective(state_random)
         # energy_random = energy(state_random)
-
+        print(energy_best, end="\t")
         for j in range(MAX_CHANGES):  # FOR j =1 to max-changes DO
             rand_decision = random.choice(prob.decisions)  # Pick at random on which decision to change # c = random part of solution
             state_new = copy.deepcopy(state_random)
