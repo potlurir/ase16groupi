@@ -12,10 +12,10 @@ We plan to add the following restrictions on the VRP problem:
     
 Some of the objective function that we plan to optimize are:
 
-    * *Minimize* the **global transportation cost** based on the global distance travelled as well as the fixed costs associated with the used vehicles and drivers.
-    * *Minimize* the **number of vehicles** needed to serve all customers.
-    * *Least* **variation in travel time and vehicle load**.
-    * *Minimize* penalties for low quality service.
+    * Minimize the global transportation cost based on the global distance travelled as well as the fixed costs associated with the used vehicles and drivers.
+    * Minimize the number of vehicles needed to serve all customers.
+    * Least variation in travel time and vehicle load.
+    * Minimize penalties for low quality service.
 
 Various heuristic algorithms have been used to solve VRPs. For this project, we plan to solve VRP by using Ant Colony Optimization (ACO) and Simulated Annealing (SA) and comment on the performance and results of the two algorithms. 
     
