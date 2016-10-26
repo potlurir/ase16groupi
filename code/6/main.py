@@ -1,8 +1,10 @@
 from __future__ import print_function
 from __future__ import division
 
+import decimal
 import random
 import math
+from tabulate import tabulate
 
 
 class Decision(object):
@@ -177,7 +179,7 @@ def simulated_annealing(model):
     def probability(old, new, k): return math.exp((old-new)/k)
     # TODO: provide some way so that n and m don't have to be hardcoded
     n = 100
-    m = 50
+    m = 80
     K_MAX = 1000
 
     """
@@ -266,9 +268,14 @@ def max_walk_sat(model):
 
 
 if __name__ == '__main__':
+    result = []
     for model in [Schaffer, Osyczka2, Kursawe]:
         for optimizer in [simulated_annealing, max_walk_sat]:
             print('\n\nModel : {0} \t Optimizer = {1}'.format(model.__name__, optimizer.__name__))
             best_state, best_energy = optimizer(model())
+            result.append((model.__name__, optimizer.__name__, best_state.decisions, best_state.objectives, best_energy))
             print("\nBest State: \n\tDecisions{0}\n\tObjectives{1} \nBest Energy: {2}".format(
                 best_state.decisions, best_state.objectives, best_energy))
+    #result.sort(key=lambda x: x[1])
+    headers = ['Model', 'Optimizer', 'Best Decisions', 'Best Objectives', 'Best energy']
+    print(tabulate(result, headers=headers))
