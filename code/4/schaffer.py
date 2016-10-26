@@ -37,12 +37,15 @@ def find_schaffer_max_min():
 SC_MAX, SC_MIN = find_schaffer_max_min()
 K_MAX = 1000.0
 
+
 def schaffer(x):
     "The schaffer objective function"
     return (pow(x,2) + pow((x-2), 2) - SC_MIN) / float(SC_MAX - SC_MIN)
-    
+
+
 def probability(old, new, k):
     return math.exp((old - new)/float(k))
+
 
 def simulated_annealing(n, m, seed):
     """ Simulated Annealing (SA) tries to find the decision which optimizes the objectives. 
@@ -77,7 +80,7 @@ def simulated_annealing(n, m, seed):
             sn = random.randint(-100000, 100000)
             en = schaffer(sn)
             if en < eb:  # We got the best yet
-                sb, eb = sn , en
+                sb, eb = sn, en
                 print ("!", end="")
                 
             if en < e:  # we got someone better, take it :) 
@@ -87,7 +90,7 @@ def simulated_annealing(n, m, seed):
                 s = sn
                 e = en 
                 print("?", end="")
-            k += 1    
+            k += 1
             print(".", end="")
     return sb, eb 
 
