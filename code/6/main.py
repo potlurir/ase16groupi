@@ -1,7 +1,7 @@
 from __future__ import print_function
 from __future__ import division
 
-import pdb
+# import pdb
 import random
 import math
 
@@ -35,6 +35,7 @@ class Model(object):
 
     def any(self, *args): return None
 
+
 class State(object):
     def __init__(self, **kwargs):
         self.decisions = kwargs
@@ -44,17 +45,21 @@ class State(object):
         new_state = State(**self.decisions)
         new_state.objectives = self.objectives
         return new_state
+    #
+    # def __lt__(self, other):
+    #     # binary_domination
+    #     for
 
 
 class Osyczka2(Model):
     def __init__(self):
-        decisions = [Decision('x1', 0, 10), Decision('x2', 0, 10),
-                     Decision('x3', 1, 5), Decision('x4', 0, 6),
-                     Decision('x5', 1, 5), Decision('x6', 0, 10)]
+        decisions = [Decision('x1', low=0, high=10), Decision('x2', low=0, high=10),
+                     Decision('x3', low=1, high=5), Decision('x4', low=0, high=6),
+                     Decision('x5', low=1, high=5), Decision('x6', low=0, high=10)]
         objectives = [Objective('f1'), Objective('f2')]
         super(Osyczka2, self).__init__(n_des=6, n_obj=2, decisions=decisions, objectives=objectives)
-
-    def is_valid(self, state):
+    @staticmethod
+    def is_valid(state):
         def _is_valid(x1, x2, x3, x4, x5, x6):
             try:
                 assert 0 <= x1 + x2 - 2
@@ -68,7 +73,8 @@ class Osyczka2(Model):
                 return False
         return _is_valid(**state.decisions)
 
-    def evaluate(self, state):
+    @staticmethod
+    def evaluate(state):
         def objective1(x1, x2, x3, x4, x5, x6):
             """ objective1(x) = -(25 * (x1 - 2)^2 + (x2-2)^2 + (x3-1)^2(x4-4)^2 + (x5-1)^2)"""
             return -1 * ((25 * pow(x1 - 2, 2)) +
@@ -83,7 +89,7 @@ class Osyczka2(Model):
         f1 = objective1(**state.decisions)
         f2 = objective2(**state.decisions)
         state.objectives = dict(f1=f1, f2=f2)
-        return state.objectives
+        return f1 + f2
 
     def any(self, *args):
         i = 0
@@ -127,12 +133,14 @@ class Schaffer(Model):
             Schaffer._min = e if e < Schaffer._min else Schaffer._min
 
     def any(self):
+        """Returns a State object"""
         dec = self.decisions[0]
         variable = {}
         variable[dec.name] = dec.generate_one()
         return State(**variable)
 
     def evaluate(self, state):
+        """Calculates and stores the objectives in state and returns the normalized sum of objectives"""
         def objective1(x): return pow(x, 2)
 
         def objective2(x): return pow((x - 2), 2)
@@ -140,7 +148,7 @@ class Schaffer(Model):
         f1 = objective1(**state.decisions)
         f2 = objective2(**state.decisions)
         state.objectives = dict(f1=f1, f2=f2)
-        return state.objectives
+        return (f1 + f2 - model._min)/(model._max - model._min)
 
 
 class Kursawe(Model):
@@ -150,8 +158,8 @@ class Kursawe(Model):
 def simulated_annealing(model):
     def probability(old, new, k): return math.exp((old-new)/k)
     # TODO: provide some way so that n and m don't have to be hardcoded
-    n = 1000
-    m = 100
+    n = 100
+    m = 50
     K_MAX = 1000
 
     print("\nNote: ")
@@ -162,27 +170,16 @@ def simulated_annealing(model):
     print("For larger n and m, the number of ? printed should decrease.")
     random.seed(1)  # TODO : Activate this line only when Debugging
     best_state = cur_state = model.any()
-
-    def normalize_objectives():
-        """Since, SA doesn't work well with multi-objective optimizatons, we need to combine
-        the multiple objectives of a model into one value.
-        This particular method simply normalizes the sum all objectives over the range of values."""
-        pass
-
-    def energy_fn(objectives):
-        # If there are more than one objectives then SA simply sums them all and normalizes the sum
-        return (sum(objectives.values()) - model._min )/(model._max - model._min)
-
-    best_energy = cur_energy = energy_fn(model.evaluate(cur_state))
-    print("Initial State: {0}\nInitial Energy: {1} \n".format(cur_state, cur_energy))
+    best_energy = cur_energy = model.evaluate(cur_state)
+    print("Initial State: {0}\nInitial Energy: {1} \n".format(cur_state.decisions, cur_energy))
     k = 1
-    pdb.set_trace()
+    #pdb.set_trace()
     for i in range(n):
         print()
         print(', {0}, :{1:.2f},\t'.format(m * i, best_energy), end="")
         for j in range(m):
             next_state = model.any()
-            next_energy = energy_fn(model.evaluate(next_state))
+            next_energy = model.evaluate(next_state)
             if next_energy < best_energy: # TODO: make this more generic, maximize and minimize
                 # We have got the best yet
                 best_state = next_state
@@ -204,21 +201,46 @@ def simulated_annealing(model):
 
 
 def max_walk_sat(model):
-
     # TODO: Provide some way so that these values don't have to be hardcoded
-    # p = 0.5
-    # MAX_TRIES = 50
-    # MAX_CHANGES = 50
-    # cur_state = best_state = model.any()
-    # cur_energy = best_energy = model.evaluate(best_state)
-    #
-    # print("\nBest Energy: {0} Best State: {1}".format(best_energy, best_state))
-    # for i in range(MAX_TRIES):
-    #     next_state = model.any()
-    pass
+    p = 0.001
+    MAX_TRIES = 50
+    MAX_CHANGES = 50
+    best_state = model.any()
+    best_energy = model.evaluate(best_state)
+
+    print("Initial State: {0}\nInitial Energy: {1} \n".format(best_state.decisions, best_energy))
+    for i in range(MAX_TRIES):
+        next_state = model.any()
+        next_energy = model.evaluate(next_state)
+        print(', {0}, :{1:.2f},\t'.format(MAX_CHANGES * i, best_energy), end="")
+        for j in range(MAX_CHANGES):
+            if p < random.random():
+                next_state = model.any()
+                next_energy = model.evaluate(next_state)
+                if next_energy < best_energy:
+                    print("!", end="")
+                    best_energy = next_energy
+                    best_state = next_state
+            else:
+                rand_desc = model.decisions[random.randint(0,len(model.decisions)-1)]
+                for m in range(rand_desc.low, rand_desc.high):
+                    new_state = next_state.clone()
+                    new_state.decisions[rand_desc.name] = rand_desc.generate_one()
+                    if model.is_valid(new_state):
+                        new_energy = model.evaluate(new_state)
+                        if new_energy < best_energy:
+                            print ('+', end="")
+                            best_energy = new_energy
+                            best_state = new_state
+            print(".", end="")
+        print()
+    return best_state, best_energy
 
 
 if __name__ == '__main__':
-    for model in [Schaffer]:
+    for model in [Schaffer, Osyczka2]:
         for optimizer in [simulated_annealing, max_walk_sat]:
-            optimizer(model())
+            print('\n\nModel : {0} \t Optimizer = {1}'.format(model.__name__, optimizer.__name__))
+            best_state, best_energy = optimizer(model())
+            print("\nBest State: \n\tDecisions{0}\n\tObjectives{1} \nBest Energy: {2}".format(
+                best_state.decisions, best_state.objectives, best_energy))
