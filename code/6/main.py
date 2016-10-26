@@ -1,5 +1,9 @@
 from __future__ import print_function
+from __future__ import division
+
+import pdb
 import random
+import math
 
 
 class Decision(object):
@@ -45,12 +49,12 @@ class Schaffer(Model):
 
     def __init__(self):
         Schaffer._set_max_min()
-        decisions = [Decision('x', high=Schaffer._max, low=Schaffer._min)]
+        decisions = [Decision('x', high=100000, low= -100000)]
         objectives = [Objective('y')]
         super(Schaffer, self).__init__(n_des=1, n_obj=1, decisions=decisions, objectives=objectives)
 
     @staticmethod
-    def _set_max_min(self):
+    def _set_max_min():
         """Calculate the maximum and minimum of (F1 + F2)
 
             A baseline study where you run the Schaffer 10000 times to find the min
@@ -72,36 +76,56 @@ class Schaffer(Model):
 
 
 def simulated_annealing(model):
+    def probability(old, new, k): return math.exp((old-new)/k)
+
+    n = 300
+    m = 100
+
     print("\nNote: ")
     print("Each line represents a cycle of {0} trials. \nEach trial is represented by a full stop i.e. '.'".format(m))
     print("Additionally: \n'?' means we picked a state that was not as good as the present state. i.e 'A drunken decision'")
     print("'+' means we picked a state that was better than the current one.")
     print("'!' means we picked a state that is the best among the states encounterd yet.")
     print("For larger n and m, the number of ? printed should decrease.")
-    n = 500
-    m = 50
-    mod = model()
+    mod = model
     K_MAX = 1000
     random.seed(1)  # TODO : Activate this line only when Debugging
     best_state = cur_state = mod.any()
     best_energy = cur_energy = mod.evaluate(cur_state)
     print("Initial State: {0}\nInitial Energy: {1} \n".format(cur_state, cur_energy))
     k = 1
+    pdb.set_trace()
     for i in range(n):
         print()
         print(', {0}, :{1:.2f},\t'.format(m * i, best_energy), end="")
         for j in range(m):
             next_state = mod.any()
             next_energy = mod.evaluate(next_state)
-            if next_energy < best_energy: # TODO: make this comparasion test more general
-    pass
+            if next_energy < best_energy: # TODO: make this more generic, maximize and minimize
+                # We have got the best yet
+                best_state = next_state
+                best_energy = next_energy
+                print('!', end="")
+
+            if next_energy < cur_energy:  # TODO: make this more generic, maximize and minimize
+                cur_energy = next_energy
+                # cur_state = next_state
+                print("+", end="")
+
+            elif probability(cur_energy, next_energy, k/K_MAX) < random.random():
+                cur_energy = next_energy
+                # cur_state = next_state
+                print("?", end="")
+            k += 1
+            print(".", end="")
+    return best_state, best_energy
 
 
-def max_walk_sat():
+def max_walk_sat(model):
     pass
 
 
 if __name__ == '__main__':
-    for model in [Schaffer, Osyczka2, Kursawe]:
+    for model in [Schaffer]:
         for optimizer in [simulated_annealing, max_walk_sat]:
             optimizer(model())
