@@ -1,39 +1,42 @@
-**i. Paper**
+#### 1. Paper:
+Generating Duplicate Bug Datasets
+Alina Lazar, Sarah Ritchey, Bonita Sharif
 
-Finding scientific topics - 2004
+Year - 2014
 
-T. L. Griffiths and M. Steyvers
+#### 2. Keywords:
 
-**ii. Keywords**
+ii1. *Bugzilla* : Bugzilla is a web-based general-purpose bugtracker and testing tool originally developed and used by the Mozilla project, and licensed under the Mozilla Public License.
 
-ii1. *Gibbs Sampling* : In statistics, Gibbs sampling or a Gibbs sampler is a Markov chain Monte Carlo (MCMC) algorithm for obtaining a sequence of observations which are approximated from a specified multivariate probability distribution, when direct sampling is difficult..
+ii2. *Bug* : A software bug is an error, flaw, failure, or fault in a computer program or system that causes it to produce an incorrect or unexpected result or to behave in unintended ways
 
-ii2. *Generative models* : In probability and statistics, a generative model is a model for randomly generating observable data values, typically given some hidden parameters. It specifies a joint probability distribution over observation and label sequences. Generative models are used in machine learning for either modeling data directly, or as an intermediate step to forming a conditional probability density function.
+ii3.  *Bug report* - A report which explains what exaclty the bug is or how the system is broken
 
-ii3.*Latent Dirichlet allocation* : In natural language processing, latent Dirichlet allocation (LDA) is a generative statistical model that allows sets of observations to be explained by unobserved groups that explain why some parts of the data are similar.
-
-ii4. *Markov chain Monte Carlo* : In statistics, Markov chain Monte Carlo (MCMC) methods are a class of algorithms for sampling from a probability distribution based on constructing a Markov chain that has the desired distribution as its equilibrium distribution.
+ii4. *Data repository* : Data repository is a somewhat general term used to refer to a destination designated for data storage. A partitioning of data, where partitioned data types are stored together. It is also commonly called data warehousing. 
 
 **iii. Brief Notes**
 
-iii1. *Motivational statements* : A first step in identifying the content of a document is determining which topics that document addresses. When scientists decide to write a paper, one of the first things they do is identify an interesting subset of the many possible topics of scientific investigation. The topics addressed by a paper are also one of the first pieces of information a person tries to extract when reading a scientific abstract. Scientific experts know which topics are pursued in their field, and this information plays a role in their assessments of whether papers are relevant to their interests, which research areas are rising or falling in popularity, and how papers relate to one another. This paper provides a statistical method for automatically extracting a representation of documents that provides a first-order approximation to the kind of knowledge available to domain experts.
+iii1. *Motivational statements* : Open source software projects usually have a bug or issue tracking system associated with them. These projects have been around for more than a decade, thus the total number of bugs reported has grown significantly. Many times, the same bug is reported by different people, using different words and sometimes in different contexts. Triaging bugs is usually a manual process and time intensive in itself. Having duplicate bugs makes the problem even worse and is a waste of the triager’s time.
 
-iii2. *Study instruments* : Generated a small dataset in which the output of the algorithm can be shown graphically. The dataset consisted of a set of 2,000 images, each containing 25 pixels in a 5 × 5 grid. The intensity of any pixel is specified by an integer value between zero and infinity. This dataset is of exactly the same form as a word-document co-occurrence matrix constructed from a database of documents, with each image being a document, with each pixel being a word, and with the intensity of a pixel being its frequency. They divided the dataset into 1,000 training images and 1,000 test images and ran each algorithm four times, using the same initial conditions for all three algorithms on a given run.
+iii2. *Study Instruments* : The datasets presented in this paper contain bug information downloaded from the Bugzilla websites of the following open source products: Eclipse, Open Office, Mozilla and NetBeans. 
 
-iii3.  *Hypotheses* : The topics recovered by this algorithm pick out meaningful aspects of the structure of science and reveal some of the relationships between scientific papers in different disciplines. The results of this algorithm have several interesting applications that can make it easier for people to understand the information contained in large knowledge domains, including exploring topic dynamics and indicating the role that words play in the semantic content of documents. This algorithm can be used to gain insight into the content of scientific documents. 
+iii3. *Commentary* : First, a Scrapy script was used to download the data into mongoDB. Next, a Python script was run to perform all the cleaning steps described. Finally, another Python script generated all the groups of duplicates and saved them in a list. 
+					
+iii4. *Checklists* : a) Web Crawling - The web crawling Python framework Scrapy [8] was used to collect the data
 
-iii4. *Future work* : They intend to extend this work by exploring both more complex models and more sophisticated algorithms. Discovering the topics underlying the structure of datasets is the first step to being able to visualize their content and discover meaningful trends. Hence there can be visualization algorithms that can be built on this algorithm
+b) Cleaning and Preprocessing : clean and preprocess it specifically to the problem of detecting duplicate bug reports.
 
+c) Identifying Groups and Pairs of Bugs - First, they organized the bugs in groups. All bugs representing the same defect (bug) were included into the same group, based on their dup_id. One bug per group is designated as the master
+bug and then the final results are displayed
 
 **iv. Improvements**
 
-iv1. Instead of using just topic modeling, entity modeling can be included in understanding the knowledge represented by documents. 
+iv1. Add intelligence to the algorithm by including the commit data in the evaluation parameters. This will help produce better resutls
 
-iv2. In this article they have focused on the analysis of scientific documents, as represented by the articles published in PNAS, the methods and applications we have presented are relevant to a variety of other knowledge domains
+iv2. By simple modifications this paper can also add bug severity and bug priority to its results based on the analysis done
 
 **v. References**
 
-v1. [Gibbs Sampling](https://en.wikipedia.org/wiki/Gibbs_sampling)
+v1. [Bugzilla](https://en.wikipedia.org/wiki/Bugzilla)
 
-v2. [Latent Dirichlet allocation](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation)
-
+v1. [Data repository](https://www.techopedia.com/definition/23341/data-repository)
