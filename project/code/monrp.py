@@ -8,6 +8,7 @@ from jmoo_problem import jmoo_problem
 from Requirement import Requirement
 from Client import Client
 from Release import Release
+from prettytable import PrettyTable
 
 
 class MONRP(jmoo_problem):
@@ -54,15 +55,16 @@ class MONRP(jmoo_problem):
         self.release = [Release(i, budget_release) for i in xrange(self.treleases)]
         self.precedence = self.generate_precedence()
 
-    def print_data(i):
-        print [c.weight for c in i.client]
-        for p in i.precedence:
+    def print_data(self):
+        # self.printClientData()
+        print [c.weight for c in self.client]
+        for p in self.precedence:
             print p
-        for r in i.requirement:
-            print r.cost, r.risk
-        for c in i.client:
-            print c.importance
-        print [r.budget for r in i.release]
+        # # for r in self.requirement:
+        # #     print r.cost, r.risk
+        # for c in self.client:
+        #     print c.importance
+        # print [r.budget for r in self.release]
 
     def constraint1(self, x_i, y_i):
         cost = [0 for _ in xrange(self.treleases)]
@@ -100,7 +102,7 @@ class MONRP(jmoo_problem):
         print "Clients: " + str(self.tclients) + ",",
         print "Density: " + str(self.tdensity) + ",",
         print "Budget: " + str(self.tbudget)
-        print "Decisions: " + str([(d.name, d.low, d.up) for d in self.decisions])
+        # print "Decisions: " + str([(d.name, d.low, d.up) for d in self.decisions])
 
     def evaluate(self, input = None):
 
@@ -151,7 +153,7 @@ class MONRP(jmoo_problem):
 
 
 if __name__ == "__main__":
-    problem = MONRP(50, 5, 5, 0, 80)
+    problem = MONRP(50, 5, 5, 100, 80)
     problem.printHeader()
     problem.generate_data()
     problem.print_data()
