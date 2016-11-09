@@ -19,6 +19,8 @@
 > Poker!
 
 `python PokerHand.py`
-> Incomplete Solution
+> Poker!
 
 [PokerHand.py](https://github.com/rpotluri12/ase16groupi/blob/master/code/3/PokerHand.py)
+
+![alt tag](https://github.com/rpotluri12/ase16groupi/blob/master/code/3/Screenshots/Poker.png)
