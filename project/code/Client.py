@@ -1,10 +1,13 @@
 from __future__ import division
+
 from random import random, randint
 
+
 class Client:
-    wt_min = 0
-    wt_max = 5
-    def __init__(i, id, req):
-        i.id = id
-        i.weight = int(i.wt_min + random() * (i.wt_max - i.wt_min))
-        i.importance = [randint(0,5) for _ in xrange(req)]
+    WT_MIN = 0
+    WT_MAX = 5
+
+    def __init__(self, id, req):
+        self.id = id
+        self.weight = int(self.WT_MIN + random() * (self.WT_MAX - self.WT_MIN))
+        self.importance = [randint(0,5)]*(req)

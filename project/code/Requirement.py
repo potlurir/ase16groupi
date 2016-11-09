@@ -1,11 +1,15 @@
 from __future__ import division
-from random import random, randint
+
+from random import random
+
+
 class Requirement:
-    risk_min = 1
-    risk_max = 5
-    cost_min = 10
-    cost_max = 20
-    def __init__(i, id):
-        i.id = id
-        i.risk = int(i.risk_min + random() * (i.risk_max - i.risk_min))
-        i.cost = int(i.cost_min + random() * (i.cost_max - i.cost_min))
+    RISK_MIN = 1
+    RISK_MAX = 5
+    COST_MIN = 10
+    COST_MAX = 20
+
+    def __init__(self, id):
+        self.id = id
+        self.risk = int(self.RISK_MIN + random() * (self.RISK_MAX - self.RISK_MIN))
+        self.cost = int(self.COST_MIN + random() * (self.COST_MAX - self.COST_MIN))

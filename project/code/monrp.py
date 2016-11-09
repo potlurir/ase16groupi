@@ -11,12 +11,13 @@ from Release import Release
 
 
 class MONRP(jmoo_problem):
+
     def __init__(self, requirements, releases, clients, density, budget):
-        self.name = "NRP_" + str(requirements) + "_" + str(releases) + "_" + str(clients) + "_" +str(density) \
+        self.name = "MONRP_" + str(requirements) + "_" + str(releases) + "_" + str(clients) + "_" +str(density) \
                     + "_" + str(budget)
         names = ["x"+str(i+1) for i in range(requirements)] # |x_i + y_i|
-        lows =  [-1 for i in xrange(requirements)]
-        ups =   [(releases-1) for _ in xrange(requirements)]
+        lows =  [-1]*(requirements)
+        ups =   [releases - 1]*(requirements)
         self.decisions = [jmoo_decision(names[i], lows[i], ups[i]) for i in range(requirements)]
         self.objectives = [jmoo_objective("f1", False), jmoo_objective("f2", True), jmoo_objective("f3", False)]
         self.trequirements = requirements
@@ -30,14 +31,13 @@ class MONRP(jmoo_problem):
         self.precedence = []
         self.generate_data()
 
-
     def generate_precedence(self):
-        precedence = [[0 for _ in xrange(self.trequirements)] for _ in xrange(self.trequirements)]
+        precedence = [[0]*(self.trequirements)]*(self.trequirements)
         temp = []
         for _ in xrange(int(self.tdensity * self.trequirements * 0.01)):
             while True:
-                row = randint(0, self.trequirements -1)
-                col = randint(0, self.trequirements -1)
+                row = randint(0, self.trequirements - 1)
+                col = randint(0, self.trequirements - 1)
                 t = row * 1000 + col
                 if t not in temp:
                     temp.append(t)
@@ -93,7 +93,14 @@ class MONRP(jmoo_problem):
                                 return False
                     return True
 
-
+    def printHeader(self):
+        print "Multi-Objective NRP:",
+        print "Requirements: " + str(self.trequirements) + ",",
+        print "Releases: " + str(self.treleases) + ",",
+        print "Clients: " + str(self.tclients) + ",",
+        print "Density: " + str(self.tdensity) + ",",
+        print "Budget: " + str(self.tbudget)
+        print "Decisions: " + str([(d.name, d.low, d.up) for d in self.decisions])
 
     def evaluate(self, input = None):
 
@@ -145,6 +152,7 @@ class MONRP(jmoo_problem):
 
 if __name__ == "__main__":
     problem = MONRP(50, 5, 5, 0, 80)
+    problem.printHeader()
     problem.generate_data()
     problem.print_data()
 
