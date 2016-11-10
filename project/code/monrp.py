@@ -8,17 +8,16 @@ from jmoo_problem import jmoo_problem
 from Requirement import Requirement
 from Client import Client
 from Release import Release
-from prettytable import PrettyTable
+from printtable import PrintTable
 
 
 class MONRP(jmoo_problem):
 
     def __init__(self, requirements, releases, clients, density, budget):
-        self.name = "MONRP_" + str(requirements) + "_" + str(releases) + "_" + str(clients) + "_" +str(density) \
-                    + "_" + str(budget)
-        names = ["x"+str(i+1) for i in range(requirements)] # |x_i + y_i|
-        lows =  [-1]*(requirements)
-        ups =   [releases - 1]*(requirements)
+        # |x_i + y_i|
+        names = ["x"+str(i+1) for i in range(requirements)]
+        lows =  [-1 for _ in xrange(requirements)]
+        ups =   [(releases - 1) for _ in xrange(requirements)]
         self.decisions = [jmoo_decision(names[i], lows[i], ups[i]) for i in range(requirements)]
         self.objectives = [jmoo_objective("f1", False), jmoo_objective("f2", True), jmoo_objective("f3", False)]
         self.trequirements = requirements
@@ -33,7 +32,8 @@ class MONRP(jmoo_problem):
         self.generate_data()
 
     def generate_precedence(self):
-        precedence = [[0]*(self.trequirements)]*(self.trequirements)
+        precedence = [[0 for _ in xrange(self.trequirements)]
+                      for _ in xrange(self.trequirements)]
         temp = []
         for _ in xrange(int(self.tdensity * self.trequirements * 0.01)):
             while True:
@@ -51,20 +51,20 @@ class MONRP(jmoo_problem):
     def generate_data(self):
         self.requirement = [Requirement(i) for i in xrange(self.trequirements)]
         self.client = [Client(i, self.trequirements) for i in xrange(self.tclients)]
-        budget_release = int((sum(req.cost for req in self.requirement) * (self.tbudget/100))/self.treleases)
+        budget_release = int((sum(req.cost for req in self.requirement) *
+                             (self.tbudget/100))/self.treleases)
         self.release = [Release(i, budget_release) for i in xrange(self.treleases)]
         self.precedence = self.generate_precedence()
 
     def print_data(self):
-        # self.printClientData()
-        print [c.weight for c in self.client]
-        for p in self.precedence:
-            print p
-        # # for r in self.requirement:
-        # #     print r.cost, r.risk
-        # for c in self.client:
-        #     print c.importance
-        # print [r.budget for r in self.release]
+        table = PrintTable(client_data=self.client,
+                           precedence_data=self.precedence,
+                           requirement_data=self.requirement,
+                           release_data=self.release)
+        print table.clients()
+        print table.requirements()
+        print table.precedence()
+        print table.releases()
 
     def constraint1(self, x_i, y_i):
         cost = [0 for _ in xrange(self.treleases)]
@@ -155,8 +155,8 @@ class MONRP(jmoo_problem):
 if __name__ == "__main__":
     problem = MONRP(50, 5, 5, 100, 80)
     problem.printHeader()
-    problem.generate_data()
     problem.print_data()
+    # print problem.evaluate(problem.requirement)
 
 
 

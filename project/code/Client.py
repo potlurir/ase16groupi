@@ -10,4 +10,4 @@ class Client:
     def __init__(self, id, req):
         self.id = id
         self.weight = int(self.WT_MIN + random() * (self.WT_MAX - self.WT_MIN))
-        self.importance = [randint(0,5)]*(req)
+        self.importance = [randint(0,5) for _ in xrange(req)]
