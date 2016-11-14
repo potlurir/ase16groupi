@@ -4,7 +4,7 @@ from __future__ import division
 from random import randint
 import random
 import tabulate
-random.seed(1)
+#random.seed(1)
 """
 This model of Next Release Problem is based on the paper
 A Study of the Multi-Objective Next Release Problem by
@@ -14,13 +14,19 @@ J. J. Durillo et. al. in the
 
 
 class Decision(object):
-    def __init__(self, name, high, low):
+    def __init__(self, name, low, high, generator_fn=randint):
+        assert low < high, "low > high for Decision {0}".format(name)
         self.name = name
         self.low = low
         self.high = high
+        self.generator_fn = generator_fn
+
+    def generate(self):
+        return self.generator_fn(self.low, self.high)
 
     def __repr__(self):
         return "{0} low= {1} high= {2}".format(self.name, self.low, self.high)
+
 
 class Objective(object):
     def __init__(self, name, do_minimize=True):
@@ -30,9 +36,10 @@ class Objective(object):
     def __repr__(self):
         return "{0}".format(self.name)
 
+
 class Requirement(object):
     cost_min = 1
-    cost_max = 20
+    cost_max = 200
 
     def __init__(self, name):
         # Cost is the economical cost for satisfying a requirement
@@ -108,23 +115,50 @@ class NRP(object):
         # importance_matrix[i][j] represents the importance of requirement r_j for customer c_i
         self.importance_matrix = generate_importance()
 
+    def calculate_cost(self, decs):
+        """ Returns the cost of implementing the requirements in decs"""
+        return sum([self.requirements[i].cost for i, dec in enumerate(decs) if dec != -1])
 
-    def check_buget_constraint(self):
+    def is_budget_ok(self, decs):
         # Checks if the requirements selected don't exceed the budget
-        pass
+        # TODO: For multi-release projects, this will need modification
+        return self.calculate_cost(decs) <= self.budget
 
-    def check_requirement_dependency(self):
+    def is_dependency_ok(self, decs):
         # Checks if the dependencies among the requirements is satisfied
-        pass
+        # TODO: For dependent requirements, this needs to be implemented
+        return True
 
     def any(self):
-        # Generates a decision
-        pass
+        """ Generates a set of requirements R' """
+        for _ in range(100):
+            decs = [dec.generate() for dec in self.decisions]
+            if self.is_budget_ok(decs) and self.is_dependency_ok(decs):
+                return decs
+        raise Exception("Could not generate a valid decision in 100 attempts")
+
+    def any3(self):
+        """ Generates three different set of requirements R', R'' and R''' """
+        first = self.any()
+        second = first
+        while first == second:
+            second = self.any()
+        third = first
+        while third == first or third == second:
+            third = self.any()
+        return first, second, third
 
     def evaluate(self, decisions):
         pass
 
 
 if __name__ == '__main__':
-    nrp = NRP()
+    nrp = NRP(n_requirements=20, budget=1000)
     print(nrp)
+    one = nrp.any()
+
+    two, three, four = nrp.any3()
+    print (one, nrp.calculate_cost(one))
+    print(two, nrp.calculate_cost(two))
+    print(three, nrp.calculate_cost(three))
+    print(four, nrp.calculate_cost(four))
