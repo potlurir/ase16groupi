@@ -2,6 +2,7 @@ from __future__ import print_function
 from __future__ import division
 
 from collections import namedtuple
+from matplotlib import pyplot as plt
 from random import randint
 import random
 import tabulate
@@ -90,7 +91,7 @@ class NRP(object):
         self.density = density  # Currently considering only independent requirements
         self.budget = budget
         # to include a requirement or not in a release is a decision
-        # If a requirement is never to me satisfied then its value will be -1
+        # If a requirement is never to be satisfied then its value will be -1
         # otherwise its value would be the release number during which it will be developed
         # For single release projects it can be either -1 (don't develop it) or 0 (ship it in current release)
         self.decisions = [Decision('d'+str(i), low=-1, high=n_releases-1) for i in range(n_requirements)]
@@ -155,7 +156,9 @@ class NRP(object):
         raise Exception("Could not generate a valid decision in 100 attempts")
 
     def any3(self):
-        """ Generates three different State objects with set of requirements R', R'' and R''' """
+        """ Generates three different State objects with set of requirements R', R'' and R'''
+        Considering that we will need this in Differential evolution
+        I might have kept this method in DE code"""
         first = self.any()
         second = first
         while first == second:
@@ -181,14 +184,34 @@ class NRP(object):
             state.objectives = objective(cost, sat_score)
             return state.objectives
 
+def plot_cost_and_satisfaction(objective):
+    plt.title('Cost and Satisfaction graph for Next Release Problem')
+    asd = (zip(*objective))
+    #print(len(asd))
+    #print (asd)
+
+    plt.plot(asd[0], asd[1], '.')
+
+    # plt.annotate(f1_n_, xy=(75, 2000), xytext=(60, 2500),
+    #              arrowprops=dict(facecolor='black', shrink=0.05))
+    # plt.annotate(g1_n_, xy=(70, 190), xytext=(80, 500),
+    #              arrowprops=dict(facecolor='black', shrink=0.05))
+    #plt.plot(range(n), g_fun(n))
+    plt.xlabel('cost ->')
+    plt.ylabel('satisfaction ->')
+    plt.show()
+
 if __name__ == '__main__':
     nrp = NRP(n_requirements=30, budget=1000)
     print(nrp)
     dddd = []
     for _ in range(100):
         dddd.append(nrp.evaluate(nrp.any()))
+
     for dd in sorted(dddd, key = lambda x: x[0]):
         print(dd)
+    plot_cost_and_satisfaction(objective=dddd)
+
     # two, three, four = nrp.any3()
     # print (one, nrp.calculate_cost(one))
     # print(two, nrp.calculate_cost(two))
