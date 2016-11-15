@@ -1,10 +1,11 @@
 from __future__ import print_function
 from __future__ import division
 
+from collections import namedtuple
 from random import randint
 import random
 import tabulate
-#random.seed(1)
+random.seed(1)
 """
 This model of Next Release Problem is based on the paper
 A Study of the Multi-Objective Next Release Problem by
@@ -62,6 +63,22 @@ class Client(object):
 
     def __repr__(self):
         return "{0} value= {1}".format(self.name, self.value)
+
+
+class State(object):
+    def __init__(self, decisions=None):
+        self.decisions = decisions
+        self.objectives = None
+
+    def __eq__(self, other):
+        return self.decisions == other.decisions
+
+    def __iter__(self):
+        for dec in self.decisions:
+            yield dec
+
+    def __repr__(self):
+        return str(self.decisions)
 
 
 class NRP(object):
@@ -130,15 +147,15 @@ class NRP(object):
         return True
 
     def any(self):
-        """ Generates a set of requirements R' """
+        """ Returns a State object which is a set of requirements R' """
         for _ in range(100):
             decs = [dec.generate() for dec in self.decisions]
             if self.is_budget_ok(decs) and self.is_dependency_ok(decs):
-                return decs
+                return State(decs)
         raise Exception("Could not generate a valid decision in 100 attempts")
 
     def any3(self):
-        """ Generates three different set of requirements R', R'' and R''' """
+        """ Generates three different State objects with set of requirements R', R'' and R''' """
         first = self.any()
         second = first
         while first == second:
@@ -148,17 +165,33 @@ class NRP(object):
             third = self.any()
         return first, second, third
 
-    def evaluate(self, decisions):
-        pass
+    def calculate_satisfaction(self, state):
+        sat_scores = 0
+        for i, client in enumerate(self.clients):
+             sat_scores += client.value * sum([self.importance_matrix[i][j] for j, dec in enumerate(state) if dec != -1])
+        return sat_scores
 
+    def evaluate(self, state):
+        assert len(self.decisions) == len(state.decisions), "Something somewhere went terribly wrong"
+        assert len(self.requirements) == len(state.decisions), "Mission Abort, report to Houston"
+        if self.is_budget_ok(state) and self.is_dependency_ok(state):
+            cost = self.calculate_cost(state)
+            sat_score = self.calculate_satisfaction(state)
+            objective = namedtuple('objectives', 'cost satisfaction')
+            state.objectives = objective(cost, sat_score)
+            return state.objectives
 
 if __name__ == '__main__':
-    nrp = NRP(n_requirements=20, budget=1000)
+    nrp = NRP(n_requirements=30, budget=1000)
     print(nrp)
-    one = nrp.any()
-
-    two, three, four = nrp.any3()
-    print (one, nrp.calculate_cost(one))
-    print(two, nrp.calculate_cost(two))
-    print(three, nrp.calculate_cost(three))
-    print(four, nrp.calculate_cost(four))
+    dddd = []
+    for _ in range(100):
+        dddd.append(nrp.evaluate(nrp.any()))
+    for dd in sorted(dddd, key = lambda x: x[0]):
+        print(dd)
+    # two, three, four = nrp.any3()
+    # print (one, nrp.calculate_cost(one))
+    # print(two, nrp.calculate_cost(two))
+    # print(three, nrp.calculate_cost(three))
+    # print(four, nrp.calculate_cost(four))
+    # print (nrp.evaluate(one))
