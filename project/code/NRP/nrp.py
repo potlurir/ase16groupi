@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from random import randint
 import random
 import tabulate
-random.seed(1)
+#random.seed(1)
 """
 This model of Next Release Problem is based on the paper
 A Study of the Multi-Objective Next Release Problem by
