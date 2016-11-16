@@ -6,7 +6,6 @@ from matplotlib import pyplot as plt
 from random import randint
 import random
 import tabulate
-#random.seed(1)
 """
 This model of Next Release Problem is based on the paper
 A Study of the Multi-Objective Next Release Problem by
@@ -28,6 +27,12 @@ class Decision(object):
 
     def __repr__(self):
         return "{0} low= {1} high= {2}".format(self.name, self.low, self.high)
+
+
+def test_Decision():
+    d = Decision('x', low=-1, high=0)
+    for _ in range(10):
+        assert d.generate() in [0,-1]
 
 
 class Objective(object):
@@ -83,6 +88,14 @@ class State(object):
 
     def __repr__(self):
         return str(self.decisions)
+
+
+def test_state():
+    s = State(range(10))
+    t = State(range(10))
+    assert s == t
+    n = State(range(1,11))
+    assert s != n
 
 
 class NRP(object):
@@ -185,8 +198,6 @@ class NRP(object):
         return sat_scores
 
     def evaluate(self, state):
-        #import pdb
-        #pdb.set_trace()
         assert len(self.decisions) == len(state.decisions), "Something somewhere went terribly wrong"
         assert len(self.requirements) == len(state.decisions), "Mission Abort, report to Houston"
         if self.is_budget_ok(state) and self.is_dependency_ok(state):
@@ -210,10 +221,15 @@ def plot_cost_and_satisfaction(objective):
     plt.show()
 
 if __name__ == '__main__':
+    random.seed(1)
+
+    test_state()
+    test_Decision()
+
     nrp = NRP() #n_requirements=30, budget=1000)
     print(nrp)
     dddd = []
-    for _ in range(40):
+    for _ in range(100):
         dddd.append(nrp.evaluate(nrp.any()))
 
     for dd in sorted(dddd, key = lambda x: x[0]):
