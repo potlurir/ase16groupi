@@ -46,7 +46,8 @@ class Requirement(object):
     def __init__(self, name):
         # Cost is the economical cost for satisfying a requirement
         self.name = name
-        self.cost = randint(Requirement.cost_min, Requirement.cost_max)
+        # Maximizing the negative cost
+        self.cost = -1 * randint(Requirement.cost_min, Requirement.cost_max)
 
     def __repr__(self):
         return "{0} Cost= {1}".format(self.name,str(self.cost))
@@ -54,7 +55,7 @@ class Requirement(object):
 
 class Client(object):
     imp_min = 1
-    imp_max = 5
+    imp_max = 10
 
     def __init__(self, name):
         # Each client has associated a value which reflects its degree of importance
@@ -71,6 +72,8 @@ class State(object):
         self.decisions = decisions
         self.objectives = None
 
+    # This might be cause problems
+    # Two states should be compared on based of decisions or objectives?
     def __eq__(self, other):
         return self.decisions == other.decisions
 
@@ -83,13 +86,14 @@ class State(object):
 
 
 class NRP(object):
-    def __init__(self, n_requirements=10, n_releases=1, n_clients=10, density=0, budget=100):
+    def __init__(self, n_requirements=30, n_releases=1, n_clients=10, density=0, budget=1000):
 
         self.n_requirements = n_requirements
         self.n_releases = n_releases
         self.n_clients = n_clients
         self.density = density  # Currently considering only independent requirements
-        self.budget = budget
+        # Maximizing negative of cost
+        self.budget = -1 * budget
         # to include a requirement or not in a release is a decision
         # If a requirement is never to be satisfied then its value will be -1
         # otherwise its value would be the release number during which it will be developed
@@ -98,7 +102,8 @@ class NRP(object):
         # Currently two objectives
         # 1) Total cost in developing the requirements
         # 2) Satisfaction of all the customers
-        self.objectives = [Objective('cost', do_minimize=True), Objective('satisfaction', do_minimize=False)]
+        # Maximizing negative of cost
+        self.objectives = [Objective('cost', do_minimize=False), Objective('satisfaction', do_minimize=False)]
 
         self.clients = None
         self.requirements = None
@@ -108,7 +113,8 @@ class NRP(object):
         self.generate_random_data()
 
     def __str__(self):
-        ss = "\nRequirements : {0}\n".format(self.requirements)
+        ss = "\nn_releases = {0} budget= {1}".format(self.n_releases, self.budget)
+        ss += "\nRequirements : {0}\n".format(self.requirements)
         ss += "\nClients : {0}\n".format(self.clients)
         ss += "\nImportance Matrix\n"
         # for aasd in self.importance_matrix:
@@ -140,7 +146,8 @@ class NRP(object):
     def is_budget_ok(self, decs):
         # Checks if the requirements selected don't exceed the budget
         # TODO: For multi-release projects, this will need modification
-        return self.calculate_cost(decs) <= self.budget
+        # Maximizing negative of cost
+        return self.calculate_cost(decs) >= self.budget
 
     def is_dependency_ok(self, decs):
         # Checks if the dependencies among the requirements is satisfied
@@ -149,24 +156,27 @@ class NRP(object):
 
     def any(self):
         """ Returns a State object which is a set of requirements R' """
-        for _ in range(100):
+        _n_attempts = 300
+        for _ in range(_n_attempts):
             decs = [dec.generate() for dec in self.decisions]
             if self.is_budget_ok(decs) and self.is_dependency_ok(decs):
                 return State(decs)
-        raise Exception("Could not generate a valid decision in 100 attempts")
+        # TODO: Decide what to do? Return None or raise an exception
+        #return None
+        raise Exception("Could not generate a valid decision in {0} attempts. Try again".format(_n_attempts))
 
-    def any3(self):
-        """ Generates three different State objects with set of requirements R', R'' and R'''
-        Considering that we will need this in Differential evolution
-        I might have kept this method in DE code"""
-        first = self.any()
-        second = first
-        while first == second:
-            second = self.any()
-        third = first
-        while third == first or third == second:
-            third = self.any()
-        return first, second, third
+    # def any3(self):
+    #     """ Generates three different State objects with set of requirements R', R'' and R'''
+    #     Considering that we will need this in Differential evolution
+    #     I might have kept this method in DE code"""
+    #     first = self.any()
+    #     second = first
+    #     while first == second:
+    #         second = self.any()
+    #     third = first
+    #     while third == first or third == second:
+    #         third = self.any()
+    #     return first, second, third
 
     def calculate_satisfaction(self, state):
         sat_scores = 0
@@ -175,6 +185,8 @@ class NRP(object):
         return sat_scores
 
     def evaluate(self, state):
+        #import pdb
+        #pdb.set_trace()
         assert len(self.decisions) == len(state.decisions), "Something somewhere went terribly wrong"
         assert len(self.requirements) == len(state.decisions), "Mission Abort, report to Houston"
         if self.is_budget_ok(state) and self.is_dependency_ok(state):
@@ -183,29 +195,25 @@ class NRP(object):
             objective = namedtuple('objectives', 'cost satisfaction')
             state.objectives = objective(cost, sat_score)
             return state.objectives
+        else:
+            return None
+
 
 def plot_cost_and_satisfaction(objective):
     plt.title('Cost and Satisfaction graph for Next Release Problem')
     asd = (zip(*objective))
-    #print(len(asd))
-    #print (asd)
 
     plt.plot(asd[0], asd[1], '.')
 
-    # plt.annotate(f1_n_, xy=(75, 2000), xytext=(60, 2500),
-    #              arrowprops=dict(facecolor='black', shrink=0.05))
-    # plt.annotate(g1_n_, xy=(70, 190), xytext=(80, 500),
-    #              arrowprops=dict(facecolor='black', shrink=0.05))
-    #plt.plot(range(n), g_fun(n))
     plt.xlabel('cost ->')
     plt.ylabel('satisfaction ->')
     plt.show()
 
 if __name__ == '__main__':
-    nrp = NRP(n_requirements=30, budget=1000)
+    nrp = NRP() #n_requirements=30, budget=1000)
     print(nrp)
     dddd = []
-    for _ in range(100):
+    for _ in range(40):
         dddd.append(nrp.evaluate(nrp.any()))
 
     for dd in sorted(dddd, key = lambda x: x[0]):
