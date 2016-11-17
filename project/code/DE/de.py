@@ -19,6 +19,14 @@ def _union(arr1, arr2):
 def _intersection(arr1, arr2):
     return [x and y for x,y in zip(arr1, arr2)]
 
+def _is_continous_dominated(C, T, cost_normalizer, sat_normalizer):
+    dominated = False
+    cst = (T.objectives.cost - C.objectives.cost)/float(cost_normalizer)
+    sat = (T.objectives.satisfaction - C.objectives.satisfaction) / float(sat_normalizer)
+
+
+
+
 
 def _is_binary_dominated(C, T):
     # Check if T dominates C
@@ -40,10 +48,10 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
     model = model_()
     # This might raise an exception
     population = list()
-    while len(population) < population_size:
+    while len(population)  < population_size:
         candidate = model.any()
         if candidate not in population:
-        #if True:  # We have to generate distinct population
+            # We have to generate distinct population
             population.append(candidate)
         else:
             print("Duplicate found")
@@ -51,37 +59,53 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
     for candidate in population:
         model.evaluate(candidate)
 
-    # reduce population size. Reject shitty candidates
+    cost_max = sat_max = float('-inf')
+    cost_min = sat_min = float('inf')
+    for candidate in population:
+        if candidate.objective.cost < cost_min:
+            cost_min = candidate.objective.cost
+        if candidate.objective.cost > cost_max:
+            cost_max = candidate.objective.cost
+        if candidate.objective.satisfaction < sat_min:
+            sat_min = candidate.objective.satisfaction
+        if candidate.objective.satisfaction > sat_max:
+            sat_max = candidate.objective.satisfaction
+    print(cost_max, cost_min, sat_max, sat_min)
+    cost_normalizer = cost_max - cost_min
+    sat_normalizer = sat_max - sat_min
+    # reduce population size. Reject bad candidates
     # Pick two candidates at random, and kill the one that is dominated.
-    # for _ in range(population_size):
-    #
-    #     xyz = len(population)-1
-    #     print(xyz)
-    #     a, b = [random.randint(0, xyz) for _ in range(2)]
-    #     print(a,b)
-    #     if _is_binary_dominated(population[a], population[b]):
-    #         population.pop(a)
-    #     elif _is_binary_dominated(population[b], population[a]):
-    #         #pdb.set_trace()
-    #         population.pop(b)
+    for _ in range(population_size * 2):
+
+        xyz = len(population)-1
+        print(xyz)
+        a, b = [random.randint(0, xyz) for _ in range(2)]
+        print(a,b)
+        if _is_binary_dominated(population[a], population[b]):
+            population.pop(a)
+        elif _is_binary_dominated(population[b], population[a]):
+            #pdb.set_trace()
+            population.pop(b)
 
     print ('Initial population size = {0}'.format(len(population)))
     plot_graph(population, None)
     #initial_population = deepcopy(population)
-    # We need 3 unique person from the population.
-    # TODO: But I will care about that later
     new_candidates = []
     for _ in range(5000):  # It should be n_decision * 10.
         while 1:
             a,b,c = [random.randint(0, len(population)-1) for _ in range(3)]
             #print('a = {0} b = {1} c = {2}'.format(a, b, c))
             if a != b and a != c and b != c:
+                # We got 3 unique person from the population.
                 break
         A, B, C = [population[i] for i in [a, b, c]]
-        assert A in population
-        assert B in population
-        assert C in population
-        F = [f > random.random() for _ in range(len(A.decisions))]
+
+        # assert A in population
+        # assert B in population
+        # assert C in population
+        # TODO:
+        F = [0 if f > random.random() else -1 for _ in range(len(A.decisions))]
+        pdb.set_trace()
         # T = A + f(B-C)  DE/rand/1
         # For binary operators,
         # T = (A or (F and( B xor C )))
@@ -94,7 +118,6 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
                 print("T.objectives = {0}".format(T.objectives))
                 print("C.objectives = {0}".format(C.objectives))
                 new_candidates.append(deepcopy(T))
-                #replaced_population.append(deepcopy(C))
 
                 print (" C was replaced by T")
                 population[c] = T
@@ -132,7 +155,7 @@ if __name__ == '__main__':
     #     new_candidates, population = differential_evolution(population_size=300, f=0.05 * i)
     #     xyz.append(len(new_candidates))
     # print(xyz)
-    new_candidates, population = differential_evolution(population_size=300, f=0.2)
+    new_candidates, population = differential_evolution(population_size=300, f=0.8)
     print (len(new_candidates))
 
     plot_graph(new_candidates, population)
