@@ -4,6 +4,7 @@ import pdb
 from matplotlib import pyplot as plt
 from copy import deepcopy
 import random
+from math import exp
 from ..NRP.nrp import NRP
 from ..NRP.nrp import State
 
@@ -18,11 +19,56 @@ def _union(arr1, arr2):
 
 def _intersection(arr1, arr2):
     return [x and y for x,y in zip(arr1, arr2)]
+"""
+def cdom(self, obj1, obj2):
 
-def _is_continous_dominated(C, T, cost_normalizer, sat_normalizer):
-    dominated = False
-    cst = (T.objectives.cost - C.objectives.cost)/float(cost_normalizer)
-    sat = (T.objectives.satisfaction - C.objectives.satisfaction) / float(sat_normalizer)
+    Continuous Domination
+    :param obj1: Objective 1
+    :param obj2: Objective 2
+    :return: Check if objective 1 dominates objective 2 based on exponential loss.
+
+    def norm(val, least, most):
+      least = min(least, val)
+      most = max(most, val)
+      return (val - least) / (most - least + 0.0001)
+    def exp_loss(x_i, y_i, w_i, n):
+      return -1*exp(w_i*(x_i-y_i)/n)
+    def loss(x, y):
+      x_norm = [norm(v,lo,hi) for v,lo,hi in zip(x, self.limits.mins, self.limits.maxs)]
+      y_norm = [norm(v,lo,hi) for v,lo,hi in zip(y, self.limits.mins, self.limits.maxs)]
+      n = len(x)
+      losses = [exp_loss(x_i, y_i, w_i, n) for x_i, y_i, w_i in zip(x_norm, y_norm, self.limits.weights)]
+      return sum(losses)/n
+    l1 = loss(obj1, obj2)
+    l2 = loss(obj2, obj1)
+return abs(l1 - l2) > self.settings.cdom_delta and l1 < l2"""
+
+def _is_continous_dominated(C, T, limits):
+    # Returns True if T dominates C.
+    #pdb.set_trace()
+
+    def normalize(val, _max, _min):
+        # TODO: divide by zero
+        # Let's see if this ever generates divide by zero exception.
+        _max = max(_max, val)
+        _min = min(_min, val)
+        return (val - _min)/float(_max - _min)
+
+    def exp_loss(c, t, w, n):
+        return -1 * exp(w * ( c - t)/float(n))
+
+    def loss(c, t):
+        c_norm = [normalize(val, limit[0], limit[1]) for val, limit in zip(c.objectives, limits)]
+        t_norm = [normalize(val, limit[0], limit[1]) for val, limit in zip(t.objectives, limits)]
+        n = len(c.objectives)
+        losses = [exp_loss(c,t,w,n) for c, t, w in zip(c_norm, t_norm, [-1, 1])]
+        return sum(losses)/float(n)
+
+    l1 = loss(C, T)  # l1 is loss associated with picking C over T
+    l2 = loss(T, C)  # l2 is loss accociated with picking T over C
+    return l2 < l1  # Return true if the loss associated with picking T is less
+    # cst = (T.objectives.cost - C.objectives.cost)/float(cost_normalizer)
+    # sat = (T.objectives.satisfaction - C.objectives.satisfaction) / float(sat_normalizer)
 
 
 
@@ -62,36 +108,35 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
     cost_max = sat_max = float('-inf')
     cost_min = sat_min = float('inf')
     for candidate in population:
-        if candidate.objective.cost < cost_min:
-            cost_min = candidate.objective.cost
-        if candidate.objective.cost > cost_max:
-            cost_max = candidate.objective.cost
-        if candidate.objective.satisfaction < sat_min:
-            sat_min = candidate.objective.satisfaction
-        if candidate.objective.satisfaction > sat_max:
-            sat_max = candidate.objective.satisfaction
+        if candidate.objectives.cost < cost_min:
+            cost_min = candidate.objectives.cost
+        if candidate.objectives.cost > cost_max:
+            cost_max = candidate.objectives.cost
+        if candidate.objectives.satisfaction < sat_min:
+            sat_min = candidate.objectives.satisfaction
+        if candidate.objectives.satisfaction > sat_max:
+            sat_max = candidate.objectives.satisfaction
     print(cost_max, cost_min, sat_max, sat_min)
-    cost_normalizer = cost_max - cost_min
-    sat_normalizer = sat_max - sat_min
+    limits = [[cost_max, cost_min], [sat_max, sat_min]]
     # reduce population size. Reject bad candidates
     # Pick two candidates at random, and kill the one that is dominated.
-    for _ in range(population_size * 2):
-
-        xyz = len(population)-1
-        print(xyz)
-        a, b = [random.randint(0, xyz) for _ in range(2)]
-        print(a,b)
-        if _is_binary_dominated(population[a], population[b]):
-            population.pop(a)
-        elif _is_binary_dominated(population[b], population[a]):
-            #pdb.set_trace()
-            population.pop(b)
+    # for _ in range(population_size * 2):
+    #
+    #     xyz = len(population)-1
+    #     #print(xyz)
+    #     a, b = [random.randint(0, xyz) for _ in range(2)]
+    #     #print(a,b)
+    #     if _is_binary_dominated(population[a], population[b]):
+    #         population.pop(a)
+    #     elif _is_binary_dominated(population[b], population[a]):
+    #         #pdb.set_trace()
+    #         population.pop(b)
 
     print ('Initial population size = {0}'.format(len(population)))
-    plot_graph(population, None)
+    #plot_graph(population, None)
     #initial_population = deepcopy(population)
     new_candidates = []
-    for _ in range(5000):  # It should be n_decision * 10.
+    for _ in range(500):
         while 1:
             a,b,c = [random.randint(0, len(population)-1) for _ in range(3)]
             #print('a = {0} b = {1} c = {2}'.format(a, b, c))
@@ -105,7 +150,7 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
         # assert C in population
         # TODO:
         F = [0 if f > random.random() else -1 for _ in range(len(A.decisions))]
-        pdb.set_trace()
+        #pdb.set_trace()
         # T = A + f(B-C)  DE/rand/1
         # For binary operators,
         # T = (A or (F and( B xor C )))
@@ -114,7 +159,8 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
         objectives = model.evaluate(T)
 
         if objectives is not None:
-            if _is_binary_dominated(C, T): # If C is dominated by T
+            if _is_continous_dominated(C, T, limits):  # If C is dominated by T
+            # if _is_binary_dominated(C, T): # If C is dominated by T
                 print("T.objectives = {0}".format(T.objectives))
                 print("C.objectives = {0}".format(C.objectives))
                 new_candidates.append(deepcopy(T))
