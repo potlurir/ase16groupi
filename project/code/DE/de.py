@@ -10,42 +10,20 @@ from ..NRP.nrp import State
 
 
 def _xor(arr1, arr2):
-    return [x^y for x,y in zip(arr1, arr2)]
+    return [x^y for x, y in zip(arr1, arr2)]
 
 
 def _union(arr1, arr2):
-    return [x or y for x,y in zip(arr1, arr2)]
+    return [x or y for x,  y in zip(arr1, arr2)]
 
 
 def _intersection(arr1, arr2):
-    return [x and y for x,y in zip(arr1, arr2)]
-"""
-def cdom(self, obj1, obj2):
-
-    Continuous Domination
-    :param obj1: Objective 1
-    :param obj2: Objective 2
-    :return: Check if objective 1 dominates objective 2 based on exponential loss.
-
-    def norm(val, least, most):
-      least = min(least, val)
-      most = max(most, val)
-      return (val - least) / (most - least + 0.0001)
-    def exp_loss(x_i, y_i, w_i, n):
-      return -1*exp(w_i*(x_i-y_i)/n)
-    def loss(x, y):
-      x_norm = [norm(v,lo,hi) for v,lo,hi in zip(x, self.limits.mins, self.limits.maxs)]
-      y_norm = [norm(v,lo,hi) for v,lo,hi in zip(y, self.limits.mins, self.limits.maxs)]
-      n = len(x)
-      losses = [exp_loss(x_i, y_i, w_i, n) for x_i, y_i, w_i in zip(x_norm, y_norm, self.limits.weights)]
-      return sum(losses)/n
-    l1 = loss(obj1, obj2)
-    l2 = loss(obj2, obj1)
-return abs(l1 - l2) > self.settings.cdom_delta and l1 < l2"""
+    return [x and y for x, y in zip(arr1, arr2)]
 
 
 def _is_continous_dominated(C, T, limits):
     # Returns True if T dominates C.
+    # from https://github.com/ai-se/softgoals/blob/master/src/utilities/de.py#L141
     #pdb.set_trace()
 
     def normalize(val, _max, _min):
@@ -68,8 +46,6 @@ def _is_continous_dominated(C, T, limits):
     l1 = loss(C, T)  # l1 is loss associated with picking C over T
     l2 = loss(T, C)  # l2 is loss accociated with picking T over C
     return l2 < l1  # Return true if the loss associated with picking T is less
-    # cst = (T.objectives.cost - C.objectives.cost)/float(cost_normalizer)
-    # sat = (T.objectives.satisfaction - C.objectives.satisfaction) / float(sat_normalizer)
 
 
 def _is_binary_dominated(C, T):
@@ -83,8 +59,6 @@ def _is_binary_dominated(C, T):
                 dominated = True
     except AssertionError:
         return False
-    # if C.objectives[1] < T.objectives[1]: # Just checking on satisfaction.
-    #     dominated = True
     return dominated
 
 
@@ -146,9 +120,7 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
         # assert A in population
         # assert B in population
         # assert C in population
-        # TODO:
         F = [0 if f > random.random() else -1 for _ in range(len(A.decisions))]
-        #pdb.set_trace()
         # T = A + f(B-C)  DE/rand/1
         # For binary operators,
         # T = (A or (F and( B xor C )))
@@ -167,18 +139,11 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
                 population[c] = T
         else:
             print("The mutant was not acceptable")
-    #improved_population = deepcopy(population)
-    pdb.set_trace()
-    for can in new_candidates:
-        for can1 in new_candidates:
-            if _is_binary_dominated(can1, can):
-                new_candidates.remove(can1)
-
-    # for i in range(len(population)-1):
-    #     for j in range(len(population)-1):
-    #         if _is_binary_dominated(population[i], population[j]):
-    #             improved_population.pop(i)
-    #             continue
+    # pdb.set_trace()
+    # for can in new_candidates:
+    #     for can1 in new_candidates:
+    #         if _is_binary_dominated(can1, can):
+    #             new_candidates.remove(can1)
 
     return new_candidates, None
 
