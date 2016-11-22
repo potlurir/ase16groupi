@@ -1,6 +1,7 @@
-from __future__ import print_function
 from __future__ import division
 
+import sys, os
+sys.path.append(os.path.abspath('.'))
 from collections import namedtuple
 from matplotlib import pyplot as plt
 from random import randint
@@ -226,14 +227,14 @@ if __name__ == '__main__':
     test_state()
     test_Decision()
 
-    nrp = NRP() #n_requirements=30, budget=1000)
+    nrp = NRP() #n_requirements=30, budget=1000
     print(nrp)
     dddd = []
     for _ in range(100):
         dddd.append(nrp.evaluate(nrp.any()))
 
     for dd in sorted(dddd, key = lambda x: x[0]):
-        print(dd)
+        print dd.cost, dd.satisfaction
     plot_cost_and_satisfaction(objective=dddd)
 
     # two, three, four = nrp.any3()

@@ -1,12 +1,13 @@
-
 from __future__ import print_function
+
+import sys, os
+sys.path.append(os.path.abspath('.'))
 import pdb
 from matplotlib import pyplot as plt
 from copy import deepcopy
 import random
 from math import exp
-from ..NRP.nrp import NRP
-from ..NRP.nrp import State
+from NRP.nrp import NRP, State
 
 
 def _xor(arr1, arr2):
@@ -129,8 +130,8 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
         objectives = model.evaluate(T)
 
         if objectives is not None:
-            # if _is_continous_dominated(C, T, limits):  # If C is dominated by T
-            if _is_binary_dominated(C, T): # If C is dominated by T
+            if _is_continous_dominated(C, T, limits):  # If C is dominated by T
+            # if _is_binary_dominated(C, T): # If C is dominated by T
                 #print("T.objectives = {0}".format(T.objectives))
                 #print("C.objectives = {0}".format(C.objectives))
                 new_candidates.append(deepcopy(T))
