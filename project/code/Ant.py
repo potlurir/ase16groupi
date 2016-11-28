@@ -111,7 +111,7 @@ class Ant4ACS(Ant):
             probability[j] = (tij * nij) / temp_sum
             sum_of_probability += probability[j]
         print "Probabilities: {0}".format(probability)
-        print "Sum of probabilites: {0}".format(sum_of_probability)
+        print "Sum of probabilities: {0}".format(sum_of_probability)
         next_node = RouletteWheel.select(probability, sum_of_probability)
         print "Next Node is {0}".format(next_node)
         print "Next node is not available in {0}".format(self.nodes_to_visit)
