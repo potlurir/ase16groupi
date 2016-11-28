@@ -69,7 +69,7 @@ class ACO(object):
 
     def get_tau(self, i=None, j=None):
         # print "Hey I am Tau: {0}, {1}".format(i, j)
-        return self.tau if (i is None and j) is None else self.tau[i][j]
+        return self.tau if (i is None and j is None) else self.tau[i][j]
 
     def set_tau(self, i, j, value):
         self.tau[i][j] = value
