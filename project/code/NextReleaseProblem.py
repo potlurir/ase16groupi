@@ -1,3 +1,5 @@
+from __future__ import division
+
 # from random import randint, seed
 import sys
 sys.dont_write_bytecode = True
@@ -30,7 +32,7 @@ class NextReleaseProblem(object):
     def __str__(self):
         return "Requirements: {0}, Customers: {1}, Budget: {2}".format(self.requirements, self.customers, self.budget)
 
-    def get_mij(self, j):
+    def get_nij(self, i, j):
         return self.MI * (self.satisfaction[j] / self.cost[j])
 
     def get_nodes(self):
@@ -44,16 +46,16 @@ class NextReleaseProblem(object):
             if (i != ant.current_node) and (self.cost[i] <= self.budget):
                 ant.nodes_to_visit.append(i)
 
-    def update_the_mandatory_neighbourhood(self, tour, nodes_to_visit):
+    def update_the_mandatory_neighbourhood(self, ant):
         nodes_to_remove = []
         total_cost = 0.0
-        for i in tour:
+        for i in ant.tour:
             total_cost = self.cost[i]
-        for i in nodes_to_visit:
+        for i in ant.nodes_to_visit:
             if total_cost + self.cost[i] > self.budget:
                 nodes_to_remove.append(i)
         for i in nodes_to_remove:
-            nodes_to_visit.remove(i)
+            ant.nodes_to_visit.remove(i)
 
     def evaluate(self, ant):
         temp_sum = 0.0

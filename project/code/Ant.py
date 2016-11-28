@@ -1,3 +1,5 @@
+from __future__ import division
+
 from random import randint, uniform
 import math
 
@@ -18,26 +20,33 @@ class Ant(object):
         self.path = [[]]
         self.nodes_to_visit = []
         self.tour_length = 0
+        self.reset()
 
     def reset(self):
         self.current_node = -1
         self.tour_length = 0
         self.nodes_to_visit = []
         self.tour = []
-        self.path = [[-1 for _ in xrange(self.aco.problem.n_requirements)]
-                     for _ in xrange(self.aco.problem.n_requirements)]
-
-    def init(self):
-        self.reset()
-        self.current_node = randint(0, self.aco.problem.n_requirements - 1)
-        self.tour.append(self.current_node)
+        self.path = [[-1 for _ in xrange(self.aco.problem.get_nodes())]
+                     for _ in xrange(self.aco.problem.get_nodes())]
 
     def run(self):
         self.init()
+        self.explore()
+        # Notify Observer here
+        # Work in Progress
 
+    def init(self):
+        self.reset()
+        self.current_node = randint(0, self.aco.problem.get_nodes() - 1)
+        self.tour.append(self.current_node)
+        self.aco.problem.initialize_the_mandatory_neighbourhood(self)
+
+    # Abstract method
     def explore(self):
         pass
 
+    # Abstract method
     def clone(self):
         pass
 
@@ -64,7 +73,7 @@ class Ant4ACS(Ant):
             self.tour.append(next_node)
             self.path[self.current_node][next_node] = 1
             self.path[next_node][self.current_node] = 1
-            self.aco.problem.update_the_mandatory_neighbourhood(self.tour, self.nodes_to_visit)
+            self.aco.problem.update_the_mandatory_neighbourhood(self)
             self.current_node = next_node
 
     def do_exploration(self):
@@ -89,7 +98,7 @@ class Ant4ACS(Ant):
         return next_node
 
     def do_exploitation(self):
-        max_val = float("INF")
+        max_val = float("-INF")
         next_node = -1
         for j in self.nodes_to_visit:
             if self.aco.get_tau(self.current_node, j) == 0.0:
@@ -100,16 +109,25 @@ class Ant4ACS(Ant):
             if value > max_val:
                 max_val = value
                 next_node = j
-        self.nodes_to_visit.remove(next_node)
         if next_node == -1:
             raise Exception("Next node is -1")
+        self.nodes_to_visit.remove(next_node)
         return next_node
 
     def local_update_rule(self, j):
-        evaporation = (1.0 - self.P) * self.aco.getTau(self.current_node, j)
-        deposition = self.P * self.aco.p.getT0()
+        evaporation = (1.0 - self.P) * self.aco.get_tau(self.current_node, j)
+        deposition = self.P * self.aco.p.get_t0()
         self.aco.set_tau(self.current_node, j, evaporation + deposition)
         self.aco.set_tau(j, self.current_node, evaporation + deposition)
+
+    def clone(self):
+        ant = Ant4ACS(self.aco)
+        ant.id = self.id
+        ant.current_node = self.current_node
+        ant.tour_length = self.tour_length
+        ant.tour = self.tour
+        ant.path = list(self.path)
+        return ant
 
 
 class RouletteWheel(object):
