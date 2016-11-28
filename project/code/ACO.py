@@ -2,21 +2,10 @@ from __future__ import division
 
 from NextReleaseProblem import NextReleaseProblem
 from Ant import Ant4ACS
-from threading import Thread
 
 import sys
 sys.dont_write_bytecode = True
-
-
-class AntThread(Thread):
-    def __init__(self, obj, name):
-        super(AntThread, self).__init__()
-        self.obj = obj
-        self.name = name
-
-    def run(self):
-        print "Thread name: " + self.name
-        self.obj.run()
+import traceback
 
 
 class ACO(object):
@@ -34,9 +23,13 @@ class ACO(object):
     def solve(self):
         self.initialize_data()
         while not self.termination_condition():
-            self.construct_ants_solution()
-            self.update_pheromones()
-        return self.best_ant
+            try:
+                self.construct_ants_solution()
+                self.update_pheromones()
+            except Exception as e:
+                print e
+                break
+        # return self.best_ant
 
     def initialize_data(self):
         self.initialize_pheromones()
@@ -58,17 +51,25 @@ class ACO(object):
     def construct_ants_solution(self):
         for ant in self.ants:
             try:
-                t = AntThread(ant, "Ant: " + str(ant.id))
-                t.start()
+                ant.run()
             except Exception as e:
                 print e
+                traceback.print_exc()
 
-    # I have to fix this. Update once observable has changes.
-    def update(self):
-        pass
+    # I have to fix this. Restart thread at last line.
+    def update(self, ant):
+        ant.tourLength = self.problem.evaluate(ant)
+        if self.problem.better(ant, self.best_ant):
+            print "I am cloning"
+            self.best_ant = ant.clone()
+        self.finished_ants += 1
+        if self.finished_ants == self.num_of_ants:
+            self.finished_ants = 0
+            # Restart Thread
 
     def get_tau(self, i=None, j=None):
-        return self.tau if not (i and j) else self.tau[i][j]
+        # print "Hey I am Tau: {0}, {1}".format(i, j)
+        return self.tau if (i is None and j) is None else self.tau[i][j]
 
     def set_tau(self, i, j, value):
         self.tau[i][j] = value
@@ -86,12 +87,14 @@ class AntColonySystem(ACO):
 
     def initialize_ants(self):
         self.ants = [Ant4ACS(self) for _ in xrange(self.num_of_ants)]
+        for ant in self.ants:
+            ant.register_observer(self)
 
     def global_update_rule(self):
         for i in xrange(self.problem.get_nodes()):
             for j in xrange(i, self.problem.get_nodes()):
                 if i != j and self.best_ant.path[i][j] == 1:
-                    delta_tau = self.problem.get_delta_tau()
+                    delta_tau = self.problem.get_delta_tau(self.best_ant)
                     evaporation = (1.0 - self.RHO) * self.tau[i][j]
                     deposition = self.RHO * delta_tau
                     self.tau[i][j] = evaporation + deposition

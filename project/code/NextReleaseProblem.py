@@ -32,6 +32,7 @@ class NextReleaseProblem(object):
     def __str__(self):
         return "Requirements: {0}, Customers: {1}, Budget: {2}".format(self.requirements, self.customers, self.budget)
 
+    # I highly doubt this.
     def get_nij(self, i, j):
         return self.MI * (self.satisfaction[j] / self.cost[j])
 

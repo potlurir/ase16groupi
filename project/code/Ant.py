@@ -1,13 +1,16 @@
 from __future__ import division
 
 from random import randint, uniform
+from threading import Thread
 import math
+# import sys
 
 
-class Ant(object):
+class Ant(Thread):
     ANT_ID = 1
 
     def __init__(self, aco):
+        super(Ant, self).__init__()
         # Importance of trail
         self.ALPHA = 1
         # Importance of heuristic evaluate
@@ -20,7 +23,15 @@ class Ant(object):
         self.path = [[]]
         self.nodes_to_visit = []
         self.tour_length = 0
+        self.__observers = []
         self.reset()
+
+    def register_observer(self, observer):
+        self.__observers.append(observer)
+
+    def notify_observers(self, ant):
+        for observer in self.__observers:
+            observer.update(self, ant)
 
     def reset(self):
         self.current_node = -1
@@ -34,13 +45,15 @@ class Ant(object):
         self.init()
         self.explore()
         # Notify Observer here
-        # Work in Progress
+        self.notify_observers(self)
 
     def init(self):
         self.reset()
         self.current_node = randint(0, self.aco.problem.get_nodes() - 1)
         self.tour.append(self.current_node)
         self.aco.problem.initialize_the_mandatory_neighbourhood(self)
+        # print self.current_node, self.tour, self.nodes_to_visit
+        # sys.exit()
 
     # Abstract method
     def explore(self):
@@ -66,8 +79,10 @@ class Ant4ACS(Ant):
     def explore(self):
         while self.nodes_to_visit:
             if uniform(0, 1) <= self.Q0:
+                print "I am exploiting!"
                 next_node = self.do_exploitation()
             else:
+                print "I am exploring!"
                 next_node = self.do_exploration()
             self.local_update_rule(next_node)
             self.tour.append(next_node)
@@ -86,14 +101,18 @@ class Ant4ACS(Ant):
             temp_sum += tij + nij
         if temp_sum == 0.0:
             raise Exception("Sum is 0.0")
-        probability = [0 for _ in xrange(self.aco.p.get_nodes())]
+        probability = [0 for _ in xrange(self.aco.problem.get_nodes())]
         sum_of_probability = 0.0
         for j in self.nodes_to_visit:
             tij = math.pow(self.aco.get_tau(self.current_node, j), self.ALPHA)
+            # print tij
             nij = math.pow(self.aco.problem.get_nij(self.current_node, j), self.BETA)
+            # print nij
             probability[j] = (tij * nij) / temp_sum
             sum_of_probability += probability[j]
         next_node = RouletteWheel.select(probability, sum_of_probability)
+        print "Next Node is {0}".format(next_node)
+        print "Next node is not available in {0}".format(self.nodes_to_visit)
         self.nodes_to_visit.remove(next_node)
         return next_node
 
@@ -105,6 +124,7 @@ class Ant4ACS(Ant):
                 raise Exception("Tau is 0.0")
             tij = self.aco.get_tau(self.current_node, j)
             nij = math.pow(self.aco.problem.get_nij(self.current_node, j), self.BETA)
+            # print self.current_node, j, tij, nij
             value = tij * nij
             if value > max_val:
                 max_val = value
@@ -116,7 +136,7 @@ class Ant4ACS(Ant):
 
     def local_update_rule(self, j):
         evaporation = (1.0 - self.P) * self.aco.get_tau(self.current_node, j)
-        deposition = self.P * self.aco.p.get_t0()
+        deposition = self.P * self.aco.problem.get_t0()
         self.aco.set_tau(self.current_node, j, evaporation + deposition)
         self.aco.set_tau(j, self.current_node, evaporation + deposition)
 
