@@ -1,13 +1,12 @@
-from __future__ import print_function
+import os
+import sys
 
-import sys, os
 sys.path.append(os.path.abspath('.'))
-import pdb
 from matplotlib import pyplot as plt
 from copy import deepcopy
 import random
 from math import exp
-from NRP.nrp import NRP, State
+from nrp import NRP, State
 
 
 def _xor(arr1, arr2):
@@ -93,21 +92,29 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
     limits = [[cost_max, cost_min], [sat_max, sat_min]]
     # reduce population size. Reject bad candidates
     # Pick two candidates at random, and kill the one that is dominated.
-    for _ in range(population_size * 2):
+    # for _ in range(population_size * 2):
 
-        xyz = len(population)-1
-        #print(xyz)
-        a, b = [random.randint(0, xyz) for _ in range(2)]
-        #print(a,b)
-        if _is_binary_dominated(population[a], population[b]):
-            population.pop(a)
-        elif _is_binary_dominated(population[b], population[a]):
-            #pdb.set_trace()
-            population.pop(b)
+    #     xyz = len(population)-1
+    #     #print(xyz)
+    #     a, b = [random.randint(0, xyz) for _ in range(2)]
+    #     #print(a,b)
+    #     if _is_binary_dominated(population[a], population[b]):
+    #         population.pop(a)
+    #     elif _is_binary_dominated(population[b], population[a]):
+    #         #pdb.set_trace()
+    #         population.pop(b)
 
     print ('Initial population size = {0}'.format(len(population)))
-    #plot_graph(population, None)
-    #initial_population = deepcopy(population)
+    for can in population:
+        for can1 in population:
+            if _is_binary_dominated(can1, can):
+                population.remove(can1)
+    for can in population:
+        for can1 in population:
+            if _is_binary_dominated(can1, can):
+                population.remove(can1)
+    plot_graph(population, None)
+    initial_population = deepcopy(population)
     new_candidates = []
     for _ in range(2000):
         while 1:
@@ -141,10 +148,14 @@ def differential_evolution(model_=NRP, population_size=40, f=0.3):
         else:
             print("The mutant was not acceptable")
     # pdb.set_trace()
-    # for can in new_candidates:
-    #     for can1 in new_candidates:
-    #         if _is_binary_dominated(can1, can):
-    #             new_candidates.remove(can1)
+    for can in new_candidates:
+        for can1 in new_candidates:
+            if _is_binary_dominated(can1, can):
+                new_candidates.remove(can1)
+    for can in new_candidates:
+        for can1 in new_candidates:
+            if _is_binary_dominated(can1, can):
+                new_candidates.remove(can1)
 
     return new_candidates, None
 
