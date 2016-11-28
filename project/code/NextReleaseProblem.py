@@ -1,4 +1,6 @@
 # from random import randint, seed
+import sys
+sys.dont_write_bytecode = True
 
 
 class NextReleaseProblem(object):
@@ -73,4 +75,3 @@ if __name__ == '__main__':
     print nrp.cost
     print nrp.customer_importance
     print nrp.customer_satisfaction
-
