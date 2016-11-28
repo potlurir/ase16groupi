@@ -23,14 +23,15 @@ class NextReleaseProblem(object):
                                       [4, 5, 2, 3, 3, 4, 2, 4, 2, 3, 5, 2, 3, 2, 4, 3, 5, 4, 3, 2],
                                       [5, 4, 2, 4, 5, 4, 2, 4, 5, 2, 4, 5, 3, 4, 4, 1, 1, 2, 4, 1]]
         self.satisfaction = [0 for _ in xrange(self.requirements)]
-        for i in xrange(self.customers):
-            for j in xrange(self.requirements):
-                self.satisfaction[i] += self.customer_importance[i] * self.customer_satisfaction[i][j]
+        for i in xrange(self.requirements):
+            for j in xrange(self.customers):
+                self.satisfaction[i] += self.customer_importance[j] * self.customer_satisfaction[j][i]
         self.satR = sum(self.satisfaction)
         self.MI = 1.0
 
     def __str__(self):
-        return "Requirements: {0}, Customers: {1}, Budget: {2}".format(self.requirements, self.customers, self.budget)
+        return "Requirements: {0}, Customers: {1}, Budget: {2}, Satisfaction: {3}, satR: {4}".\
+            format(self.requirements, self.customers, self.budget, self.satisfaction, self.satR)
 
     # I highly doubt this.
     def get_nij(self, i, j):
@@ -75,6 +76,6 @@ class NextReleaseProblem(object):
 if __name__ == '__main__':
     nrp = NextReleaseProblem(20, 5, 25)
     print str(nrp)
-    print nrp.cost
-    print nrp.customer_importance
-    print nrp.customer_satisfaction
+    # print nrp.cost
+    # print nrp.customer_importance
+    # print nrp.customer_satisfaction

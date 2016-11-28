@@ -103,8 +103,10 @@ class AntColonySystem(ACO):
 
 class NRPTest(object):
     def __init__(self):
+        # Number of ants represents number of releases.
         self.num_of_ants = 1
-        self.iterations = 1
+        # Number of iterations
+        self.iterations = 10
         self.p = NextReleaseProblem(20, 5, 25)
         aco = AntColonySystem(self.num_of_ants, self.iterations, self.p)
         # for ant in aco.ants:
