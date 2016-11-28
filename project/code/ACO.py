@@ -29,7 +29,7 @@ class ACO(object):
             except Exception as e:
                 print e
                 break
-        # return self.best_ant
+        return self.best_ant
 
     def initialize_data(self):
         self.initialize_pheromones()
@@ -69,7 +69,7 @@ class ACO(object):
 
     def get_tau(self, i=None, j=None):
         # print "Hey I am Tau: {0}, {1}".format(i, j)
-        return self.tau if (i is None and j is None) else self.tau[i][j]
+        return self.tau if (i is None or j is None) else self.tau[i][j]
 
     def set_tau(self, i, j, value):
         self.tau[i][j] = value
@@ -109,8 +109,8 @@ class NRPTest(object):
         aco = AntColonySystem(self.num_of_ants, self.iterations, self.p)
         # for ant in aco.ants:
         #     print str(ant)
-        aco.solve()
-        # print best_ant.tour
+        best_ant = aco.solve()
+        print best_ant.tour
 
 
 if __name__ == '__main__':

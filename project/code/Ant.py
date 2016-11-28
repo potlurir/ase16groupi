@@ -29,9 +29,9 @@ class Ant(Thread):
     def register_observer(self, observer):
         self.__observers.append(observer)
 
-    def notify_observers(self, ant):
+    def notify_observers(self):
         for observer in self.__observers:
-            observer.update(self, ant)
+            observer.update(self)
 
     def reset(self):
         self.current_node = -1
@@ -45,7 +45,7 @@ class Ant(Thread):
         self.init()
         self.explore()
         # Notify Observer here
-        self.notify_observers(self)
+        self.notify_observers()
 
     def init(self):
         self.reset()
@@ -110,6 +110,8 @@ class Ant4ACS(Ant):
             # print nij
             probability[j] = (tij * nij) / temp_sum
             sum_of_probability += probability[j]
+        print "Probabilities: {0}".format(probability)
+        print "Sum of probabilites: {0}".format(sum_of_probability)
         next_node = RouletteWheel.select(probability, sum_of_probability)
         print "Next Node is {0}".format(next_node)
         print "Next node is not available in {0}".format(self.nodes_to_visit)
@@ -156,6 +158,7 @@ class RouletteWheel(object):
         j = 0
         p = probability[j]
         r = uniform(0.0, sum_of_probability)
+        print p, r
         while p < r:
             j += 1
             p += probability[j]
