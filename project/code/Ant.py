@@ -28,6 +28,7 @@ class Ant(Thread):
 
     def register_observer(self, observer):
         self.__observers.append(observer)
+        # print self.__observers
 
     def notify_observers(self):
         for observer in self.__observers:
@@ -52,7 +53,7 @@ class Ant(Thread):
         self.current_node = randint(0, self.aco.problem.get_nodes() - 1)
         self.tour.append(self.current_node)
         self.aco.problem.initialize_the_mandatory_neighbourhood(self)
-        # print self.current_node, self.tour, self.nodes_to_visit
+        print self.current_node, self.tour, self.nodes_to_visit
         # sys.exit()
 
     # Abstract method
@@ -79,17 +80,19 @@ class Ant4ACS(Ant):
     def explore(self):
         while self.nodes_to_visit:
             if uniform(0, 1) <= self.Q0:
-                print "I am exploiting!"
+                # print "I am exploiting!"
                 next_node = self.do_exploitation()
             else:
-                print "I am exploring!"
+                # print "I am exploring!"
                 next_node = self.do_exploration()
+            # print "Next Node: {0}".format(next_node)
             self.local_update_rule(next_node)
             self.tour.append(next_node)
             self.path[self.current_node][next_node] = 1
             self.path[next_node][self.current_node] = 1
             self.aco.problem.update_the_mandatory_neighbourhood(self)
             self.current_node = next_node
+            print "Current Node: {0} & Nodes to visit: {1}".format(self.current_node, self.nodes_to_visit)
 
     def do_exploration(self):
         temp_sum = 0.0
@@ -110,11 +113,11 @@ class Ant4ACS(Ant):
             # print nij
             probability[j] = (tij * nij) / temp_sum
             sum_of_probability += probability[j]
-        print "Probabilities: {0}".format(probability)
-        print "Sum of probabilities: {0}".format(sum_of_probability)
+        # print "Probabilities: {0}".format(probability)
+        # print "Sum of probabilities: {0}".format(sum_of_probability)
         next_node = RouletteWheel.select(probability, sum_of_probability)
-        print "Next Node is {0}".format(next_node)
-        print "Next node is not available in {0}".format(self.nodes_to_visit)
+        # print "Next Node is {0}".format(next_node)
+        # print "Next node is not available in {0}".format(self.nodes_to_visit)
         self.nodes_to_visit.remove(next_node)
         return next_node
 
@@ -131,6 +134,7 @@ class Ant4ACS(Ant):
             if value > max_val:
                 max_val = value
                 next_node = j
+            # print "Hey I am Exploiting: {0}, {1}, {2}".format(tij, nij, value)
         if next_node == -1:
             raise Exception("Next node is -1")
         self.nodes_to_visit.remove(next_node)
@@ -141,6 +145,7 @@ class Ant4ACS(Ant):
         deposition = self.P * self.aco.problem.get_t0()
         self.aco.set_tau(self.current_node, j, evaporation + deposition)
         self.aco.set_tau(j, self.current_node, evaporation + deposition)
+        # print self.aco.get_tau(self.current_node, j)
 
     def clone(self):
         ant = Ant4ACS(self.aco)
@@ -158,7 +163,7 @@ class RouletteWheel(object):
         j = 0
         p = probability[j]
         r = uniform(0.0, sum_of_probability)
-        print p, r
+        # print p, r
         while p < r:
             j += 1
             p += probability[j]

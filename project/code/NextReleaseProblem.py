@@ -52,7 +52,8 @@ class NextReleaseProblem(object):
         nodes_to_remove = []
         total_cost = 0.0
         for i in ant.tour:
-            total_cost = self.cost[i]
+            total_cost += self.cost[i]
+        print "Total cost of Tour: {0}".format(total_cost)
         for i in ant.nodes_to_visit:
             if total_cost + self.cost[i] > self.budget:
                 nodes_to_remove.append(i)

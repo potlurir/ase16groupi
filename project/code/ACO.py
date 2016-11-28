@@ -23,12 +23,8 @@ class ACO(object):
     def solve(self):
         self.initialize_data()
         while not self.termination_condition():
-            try:
-                self.construct_ants_solution()
-                self.update_pheromones()
-            except Exception as e:
-                print e
-                break
+            self.construct_ants_solution()
+            self.update_pheromones()
         return self.best_ant
 
     def initialize_data(self):
@@ -58,9 +54,9 @@ class ACO(object):
 
     # I have to fix this. Restart thread at last line.
     def update(self, ant):
-        ant.tourLength = self.problem.evaluate(ant)
+        ant.tour_length = self.problem.evaluate(ant)
         if self.problem.better(ant, self.best_ant):
-            print "I am cloning"
+            # print "I am cloning"
             self.best_ant = ant.clone()
         self.finished_ants += 1
         if self.finished_ants == self.num_of_ants:
@@ -82,13 +78,15 @@ class ACO(object):
 
 
 class AntColonySystem(ACO):
-    def __init__(self, ants, iterations, problem):
-        super(AntColonySystem, self).__init__(ants, iterations, problem)
+    def __init__(self, num_of_ants, iterations, problem):
+        super(AntColonySystem, self).__init__(num_of_ants, iterations, problem)
 
     def initialize_ants(self):
         self.ants = [Ant4ACS(self) for _ in xrange(self.num_of_ants)]
         for ant in self.ants:
             ant.register_observer(self)
+        # ant = self.ants[0]
+        # print ant.__observers
 
     def global_update_rule(self):
         for i in xrange(self.problem.get_nodes()):
@@ -109,10 +107,10 @@ class NRPTest(object):
         self.iterations = 10
         self.p = NextReleaseProblem(20, 5, 25)
         aco = AntColonySystem(self.num_of_ants, self.iterations, self.p)
-        # for ant in aco.ants:
-        #     print str(ant)
         best_ant = aco.solve()
         print best_ant.tour
+        # Satisfaction
+        print best_ant.tour_length
 
 
 if __name__ == '__main__':
