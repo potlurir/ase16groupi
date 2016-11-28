@@ -2,10 +2,10 @@ from __future__ import division
 
 from NextReleaseProblem import NextReleaseProblem
 from Ant import Ant4ACS
-
-import sys
-sys.dont_write_bytecode = True
 import traceback
+import sys
+
+sys.dont_write_bytecode = True
 
 
 class ACO(object):
@@ -19,13 +19,14 @@ class ACO(object):
         self.it = 0
         self.finished_ants = 0
         self.best_ant = None
+        self.best_sols = []
 
     def solve(self):
         self.initialize_data()
         while not self.termination_condition():
             self.construct_ants_solution()
             self.update_pheromones()
-        return self.best_ant
+            self.best_sols.append(self.best_ant)
 
     def initialize_data(self):
         self.initialize_pheromones()
@@ -34,8 +35,6 @@ class ACO(object):
     def initialize_pheromones(self):
         self.tau = [[self.problem.get_t0() for _ in xrange(self.problem.get_nodes())]
                     for _ in xrange(self.problem.get_nodes())]
-        # print self.tau
-        # sys.exit()
 
     def termination_condition(self):
         self.it += 1
@@ -52,16 +51,13 @@ class ACO(object):
                 print e
                 traceback.print_exc()
 
-    # I have to fix this. Restart thread at last line.
     def update(self, ant):
         ant.tour_length = self.problem.evaluate(ant)
         if self.problem.better(ant, self.best_ant):
-            # print "I am cloning"
             self.best_ant = ant.clone()
         self.finished_ants += 1
         if self.finished_ants == self.num_of_ants:
             self.finished_ants = 0
-            # Restart Thread
 
     def get_tau(self, i=None, j=None):
         # print "Hey I am Tau: {0}, {1}".format(i, j)
@@ -104,13 +100,17 @@ class NRPTest(object):
         # Number of ants represents number of releases.
         self.num_of_ants = 1
         # Number of iterations
-        self.iterations = 10
-        self.p = NextReleaseProblem(20, 5, 25)
+        self.iterations = 1000
+        # NextReleaseProblem(requirements, customers, budget, max_importance, max_satisfaction)
+        self.p = NextReleaseProblem(50, 10, 125, 10, 10)
         aco = AntColonySystem(self.num_of_ants, self.iterations, self.p)
-        best_ant = aco.solve()
-        print best_ant.tour
-        # Satisfaction
-        print best_ant.tour_length
+        aco.solve()
+        solution = []
+        # print str(self.p)
+        for best_ant in aco.best_sols:
+            cost = sum(self.p.cost[i] for i in best_ant.tour)
+            solution.append((cost, best_ant.tour_length))
+        print list(set(solution))
 
 
 if __name__ == '__main__':

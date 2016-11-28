@@ -1,27 +1,19 @@
 from __future__ import division
 
-# from random import randint, seed
+from random import randint
 import sys
 sys.dont_write_bytecode = True
 
 
 class NextReleaseProblem(object):
-    def __init__(self, requirements, customers, budget):
-        # seed(0)
+    def __init__(self, requirements, customers, budget, max_importance, max_satisfaction):
         self.requirements = requirements
         self.customers = customers
         self.budget = budget
-        # self.cost = [randint(0, self.budget) for _ in xrange(self.requirements)]
-        self.cost = [1, 4, 2, 3, 4, 7, 10, 2, 1, 3, 2, 5, 8, 2, 1, 4, 10, 4, 8, 4]
-        self.customer_importance = [4, 4, 3, 5, 5]
-        # self.customer_importance = [randint(0, 5) for _ in xrange(self.customers)]
-        # self.customer_satisfaction = [[randint(0, 5) for _ in xrange(self.requirements)]
-        #                               for _ in xrange(self.customers)]
-        self.customer_satisfaction = [[4, 2, 1, 2, 5, 5, 2, 4, 4, 4, 2, 3, 4, 2, 4, 4, 4, 1, 3, 2],
-                                      [4, 4, 2, 2, 4, 5, 1, 4, 4, 5, 2, 3, 2, 4, 4, 2, 3, 2, 3, 1],
-                                      [5, 3, 3, 3, 4, 5, 2, 4, 4, 4, 2, 4, 1, 5, 4, 1, 2, 3, 3, 2],
-                                      [4, 5, 2, 3, 3, 4, 2, 4, 2, 3, 5, 2, 3, 2, 4, 3, 5, 4, 3, 2],
-                                      [5, 4, 2, 4, 5, 4, 2, 4, 5, 2, 4, 5, 3, 4, 4, 1, 1, 2, 4, 1]]
+        self.cost = [randint(1, self.budget) for _ in xrange(self.requirements)]
+        self.customer_importance = [randint(1, max_importance) for _ in xrange(self.customers)]
+        self.customer_satisfaction = [[randint(1, max_satisfaction) for _ in xrange(self.requirements)]
+                                      for _ in xrange(self.customers)]
         self.satisfaction = [0 for _ in xrange(self.requirements)]
         for i in xrange(self.requirements):
             for j in xrange(self.customers):
@@ -34,7 +26,7 @@ class NextReleaseProblem(object):
             format(self.requirements, self.customers, self.budget, self.satisfaction, self.satR)
 
     # I highly doubt this.
-    def get_nij(self, i, j):
+    def get_nij(self, j):
         return self.MI * (self.satisfaction[j] / self.cost[j])
 
     def get_nodes(self):
@@ -53,7 +45,7 @@ class NextReleaseProblem(object):
         total_cost = 0.0
         for i in ant.tour:
             total_cost += self.cost[i]
-        print "Total cost of Tour: {0}".format(total_cost)
+        # print "Total cost of Tour: {0}".format(total_cost)
         for i in ant.nodes_to_visit:
             if total_cost + self.cost[i] > self.budget:
                 nodes_to_remove.append(i)
@@ -77,6 +69,3 @@ class NextReleaseProblem(object):
 if __name__ == '__main__':
     nrp = NextReleaseProblem(20, 5, 25)
     print str(nrp)
-    # print nrp.cost
-    # print nrp.customer_importance
-    # print nrp.customer_satisfaction
