@@ -103,7 +103,7 @@ def test_state():
 
 
 class NRP(object):
-    def __init__(self, n_requirements=30, n_releases=1, n_clients=10, density=0, budget=1000):
+    def __init__(self, n_requirements=30, n_releases=1, n_clients=20, density=0, budget=1000):
 
         self.n_requirements = n_requirements
         self.n_releases = n_releases
@@ -182,8 +182,8 @@ class NRP(object):
             if self.is_budget_ok(decs) and self.is_dependency_ok(decs):
                 return State(decs)
         # TODO: Decide what to do? Return None or raise an exception
-        # return None
-        raise Exception("Could not generate a valid decision in {0} attempts. Try again".format(_n_attempts))
+        return None
+        #raise Exception("Could not generate a valid decision in {0} attempts. Try again".format(_n_attempts))
 
     def calculate_satisfaction(self, state):
         sat_scores = 0
@@ -214,25 +214,25 @@ def plot_cost_and_satisfaction(objective):
     plt.ylabel('satisfaction ->')
     plt.show()
 
-if __name__ == '__main__':
-    random.seed(1)
-
-    test_state()
-    test_Decision()
-
-    nrp = NRP() #n_requirements=30, budget=1000
-    print(nrp)
-    dddd = []
-    for _ in range(100):
-        dddd.append(nrp.evaluate(nrp.any()))
-
-    for dd in sorted(dddd, key = lambda x: x[0]):
-        print dd.cost, dd.satisfaction
-    plot_cost_and_satisfaction(objective=dddd)
-
-    # two, three, four = nrp.any3()
-    # print (one, nrp.calculate_cost(one))
-    # print(two, nrp.calculate_cost(two))
-    # print(three, nrp.calculate_cost(three))
-    # print(four, nrp.calculate_cost(four))
-    # print (nrp.evaluate(one))
+# if __name__ == '__main__':
+#     random.seed(1)
+#
+#     test_state()
+#     test_Decision()
+#
+#     nrp = NRP() #n_requirements=30, budget=1000
+#     print(nrp)
+#     dddd = []
+#     for _ in range(100):
+#         dddd.append(nrp.evaluate(nrp.any()))  # any might return None
+#
+#     for dd in sorted(dddd, key = lambda x: x[0]):
+#         print dd.cost, dd.satisfaction
+#     plot_cost_and_satisfaction(objective=dddd)
+#
+#     # two, three, four = nrp.any3()
+#     # print (one, nrp.calculate_cost(one))
+#     # print(two, nrp.calculate_cost(two))
+#     # print(three, nrp.calculate_cost(three))
+#     # print(four, nrp.calculate_cost(four))
+#     # print (nrp.evaluate(one))
