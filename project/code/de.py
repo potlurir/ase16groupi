@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function, division
 import os
 import pdb
 import sys
@@ -270,6 +270,16 @@ class DifferentialEvolution(AlgorithmBase):
         self.f = f
         super(DifferentialEvolution, self).__init__(model, population_size)
 
+    def evaluate(self, f, iterations=20, comparator=_is_continous_dominated):
+        """This method will be used in tuning DE's f parameter.
+        Runs DE for iterations times and reports the number of better candidates
+        that were generated.
+        Objective is to find the value of f which maximize the number of better
+        candidates that were generated"""
+        self.f = f
+        _, better_candidates = self.run_de(iterations, comparator=comparator)
+        return better_candidates
+
     def run_de(self, iterations=2000, comparator=_is_continous_dominated):
         """
         Returns a new set of candidates, keeps the population of class unchanged
@@ -286,6 +296,7 @@ class DifferentialEvolution(AlgorithmBase):
         population = deepcopy(self.population)
         self.limits = self.get_min_max_of_objectives()
         step_ = iterations/ self.population_size
+        better_candidates = 0
         for i in xrange(iterations):
             if len(population) < 3:
                 break
@@ -300,6 +311,7 @@ class DifferentialEvolution(AlgorithmBase):
                 continue
             if comparator(C, T, self.limits):  # If C is dominated by T
                 population.remove(C)
+                better_candidates += 1
                 if T in population:
                     pass
                     #print("Duplicate mutant candidate generated")
@@ -308,7 +320,7 @@ class DifferentialEvolution(AlgorithmBase):
             if i % step_ == 0:
                 de_pareto_candidates = de_pareto_candidates.union(self.pareto_frontier_candidates(population))
 
-        return population
+        return population, better_candidates
 
 
 def plot_graph(population, optimized, pareto):
@@ -334,16 +346,16 @@ def plot_graph(population, optimized, pareto):
         d.append(candidate.objectives[1])
     plt.plot(c, d, 'or')
 
-    plt.xlabel('cost ->')
+    plt.xlabel('cost -> f = {0}'.format(f))
     plt.ylabel('satisfaction ->')
     # limits is ((cost_max, cost_min), (sat_max, sat_min))
-    plt.axis([0, 1000, new_limits[1][1], new_limits[1][0]])
+    plt.axis([0, 1000, 0, 100000])
     plt.show()
 
 if __name__ == '__main__':
     print("Running GA")
     with open('ga_result.txt', 'w') as ga_res:
-        for i in range(20):
+        for i in range(0):
             t0 = time.time()
             ga_pareto_candidates = set()
             ga = GeneticAlgorithm(population_size=300)
@@ -364,12 +376,14 @@ if __name__ == '__main__':
     # plot_graph(ga_optimized, ga_pareto, limits)
     print ("Running DE")
     with open('de_result.txt', 'w') as de_res:
-        for i in range(20):
+        #for i in range(2):
+        de = DifferentialEvolution(population_size=300)
+        de.generate_population()
+        for f in [0.04, 0.06, 0.08, 0.1, 0.14, 0.25]:
             t0 = time.time()
-            de = DifferentialEvolution(population_size=300)
-            de.generate_population()
             #pareto = de.pareto_frontier_candidates()
-            optimized = de.run_de(comparator=_is_continous_dominated)
+            de.f = f
+            optimized, _ = de.run_de(comparator=_is_continous_dominated)
             de_pareto = de.pareto_frontier_candidates(optimized)
             t1 = time.time()
             limits1 = de.get_min_max_of_objectives(optimized)
@@ -378,11 +392,13 @@ if __name__ == '__main__':
             igd_ = igd(optimized, de_pareto_candidates)
             print("spread", spread_, "igd", igd_, "time", t1 - t0)
             de_res.write(str(spread_) + " " + str(igd_) + " " + str(t1 - t0) + "\n")
-    # (cost_max, cost_min), (sat_max, sat_min)
-    new_limits = ((max(limits[0][0], limits1[0][0]), min(limits[0][1], limits1[0][1])),
-                  (max(limits[1][0], limits1[1][0]), min(limits[1][1], limits1[1][1])))
-    plot_graph(de.population, optimized, de_pareto)
-    plot_graph(ga.population, ga_optimized, ga_pareto)
+            # (cost_max, cost_min), (sat_max, sat_min)
+            # new_limits = ((max(limits[0][0], limits1[0][0]), min(limits[0][1], limits1[0][1])),
+            #               (max(limits[1][0], limits1[1][0]), min(limits[1][1], limits1[1][1])))
+            new_limits = limits1
+            plot_graph(de.population, optimized, de_pareto)
+
+            #plot_graph(ga.population, ga_optimized, ga_pareto)
     # plot_graph(de.population, pareto, limits)
     #plot_graph(optimized, op_pareto, limits)
     #pdb.set_trace()
