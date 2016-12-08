@@ -17,3 +17,6 @@ The DE and GA codes are in [de.py](https://github.com/rpotluri12/ase16groupi/blo
 The hyperparameter tunining module is in [tuner.py](https://github.com/rpotluri12/ase16groupi/blob/master/project/code/tuner.py)
 
 `$ python tuner.py`
+
+To run ACO
+`$ python AntColonyOptimizer.py`
