@@ -1,6 +1,6 @@
-from __future__ import division
+from __future__ import division, print_function
 
-import sys, os
+import sys, os, pdb
 sys.path.append(os.path.abspath('.'))
 from collections import namedtuple
 from matplotlib import pyplot as plt
@@ -13,7 +13,7 @@ A Study of the Multi-Objective Next Release Problem by
 J. J. Durillo et. al. in the
 1st International Symposium on Search Based Software Engineering
 """
-
+random.seed(1)
 
 class Decision(object):
     def __init__(self, name, low, high, generator_fn=randint):
@@ -222,6 +222,19 @@ def plot_cost_and_satisfaction(objective):
 #
 #     nrp = NRP() #n_requirements=30, budget=1000
 #     print(nrp)
+#     for client in nrp.clients:
+#         print(client.name, end=" ")
+#     print ()
+#     for client in nrp.clients:
+#         print(client.value, end=" ")
+#     print ()
+#     for req in nrp.requirements:
+#         print(req.name, end=" ")
+#     print ()
+#     for req in nrp.requirements:
+#         print(-1 * req.cost, end=" ")
+#     print ()
+#     pdb.set_trace()
 #     dddd = []
 #     for _ in range(100):
 #         dddd.append(nrp.evaluate(nrp.any()))  # any might return None
