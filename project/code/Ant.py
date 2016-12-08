@@ -79,7 +79,11 @@ class Ant4ACS(Ant):
 
     def explore(self):
         while self.nodes_to_visit:
-            if uniform(0, 1) <= self.Q0:
+            if 1 in self.aco.problem.precedence_matrix[self.current_node] and \
+                    (self.aco.problem.precedence_matrix[self.current_node]).index(1) in self.nodes_to_visit:
+                next_node = (self.aco.problem.precedence_matrix[self.current_node]).index(1)
+                self.nodes_to_visit.remove(next_node)
+            elif uniform(0, 1) <= self.Q0:
                 next_node = self.do_exploitation()
             else:
                 next_node = self.do_exploration()
@@ -97,16 +101,16 @@ class Ant4ACS(Ant):
             if self.aco.get_tau(self.current_node, j) == 0.0:
                 raise Exception("Tau is 0.0")
             tij = math.pow(self.aco.get_tau(self.current_node, j), self.ALPHA)
-            nij = math.pow(self.aco.problem.get_nij(j), self.BETA)
-            temp_sum += tij + nij
+            wj = math.pow(self.aco.problem.get_wj(j), self.BETA)
+            temp_sum += tij + wj
         if temp_sum == 0.0:
             raise Exception("Sum is 0.0")
         probability = [0 for _ in xrange(self.aco.problem.get_nodes())]
         sum_of_probability = 0.0
         for j in self.nodes_to_visit:
             tij = math.pow(self.aco.get_tau(self.current_node, j), self.ALPHA)
-            nij = math.pow(self.aco.problem.get_nij(j), self.BETA)
-            probability[j] = (tij * nij) / temp_sum
+            wj = math.pow(self.aco.problem.get_wj(j), self.BETA)
+            probability[j] = (tij * wj) / temp_sum
             sum_of_probability += probability[j]
         next_node = RouletteWheel.select(probability, sum_of_probability)
         self.nodes_to_visit.remove(next_node)
@@ -119,8 +123,8 @@ class Ant4ACS(Ant):
             if self.aco.get_tau(self.current_node, j) == 0.0:
                 raise Exception("Tau is 0.0")
             tij = self.aco.get_tau(self.current_node, j)
-            nij = math.pow(self.aco.problem.get_nij(j), self.BETA)
-            value = tij * nij
+            wj = math.pow(self.aco.problem.get_wj(j), self.BETA)
+            value = tij * wj
             if value > max_val:
                 max_val = value
                 next_node = j
