@@ -2,6 +2,7 @@ from __future__ import division
 
 from NextReleaseProblem import NextReleaseProblem
 from Ant import Ant4ACS
+from matplotlib import pyplot as plt
 import traceback
 import sys
 
@@ -81,8 +82,6 @@ class AntColonySystem(ACO):
         self.ants = [Ant4ACS(self) for _ in xrange(self.num_of_ants)]
         for ant in self.ants:
             ant.register_observer(self)
-        # ant = self.ants[0]
-        # print ant.__observers
 
     def global_update_rule(self):
         for i in xrange(self.problem.get_nodes()):
@@ -100,17 +99,31 @@ class NRPTest(object):
         # Number of ants represents number of releases.
         self.num_of_ants = 1
         # Number of iterations
-        self.iterations = 1000
-        # NextReleaseProblem(requirements, customers, budget, max_importance, max_satisfaction)
-        self.p = NextReleaseProblem(50, 10, 125, 10, 10)
+        self.iterations = 10
+        # NextReleaseProblem(requirements, customers, budget, density, max_cost, max_importance, max_satisfaction)
+        self.p = NextReleaseProblem(200, 10, 1000, 20, 100, 10, 10)
         aco = AntColonySystem(self.num_of_ants, self.iterations, self.p)
         aco.solve()
         solution = []
         # print str(self.p)
+        # print aco.best_sols.tour
+        sols2 = []
         for best_ant in aco.best_sols:
+            best_ant.tour.sort()
             cost = sum(self.p.cost[i] for i in best_ant.tour)
             solution.append((cost, best_ant.tour_length))
-        print list(set(solution))
+            sols2.append(" ".join(str(node) for node in best_ant.tour))
+        # print list(set(sols2))
+        # print list(set(solution))
+        solution = list(set(solution))
+        plt.title('Cost and Satisfaction graph for Next Release Problem')
+        x_coordinates = [coordinate[0] for coordinate in solution]
+        y_coordinates = [coordinate[1] for coordinate in solution]
+        print x_coordinates, y_coordinates
+        plt.scatter(*zip(*solution))
+        plt.xlabel('cost ->')
+        plt.ylabel('satisfaction ->')
+        plt.show()
 
 
 if __name__ == '__main__':
