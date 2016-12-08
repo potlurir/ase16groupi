@@ -1,6 +1,6 @@
 ## Project Idea 
 
-### "OLD idea: [Solving Vehicle Routing Problem using Ant Colony Optimization](https://github.com/rpotluri12/ase16groupi/blob/master/project/ProjectIdea.md)"
+### "OLD idea: [Solving Vehicle Routing Problem using Ant Colony Optimization](https://github.com/rpotluri12/ase16groupi/blob/master/project/ProjectIdea-Old.md)"
 
 ### "Current Idea: Meta-heuristic Approaches to Solving Next Release Problem"
 
